@@ -18,16 +18,30 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
     </style>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-i2KW02MfN9duiyJ9"></script>
   </head>
   <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start px-6 py-10">
 
     <div class="glassmorph w-full max-w-3xl bg-gray-800 shadow-xl rounded-2xl p-8 space-y-6 border border-gray-200">
 
-      <h1 class="text-4xl font-extrabold text-white text-center leading-tight">
+<div class="flex items-center justify-between space-x-4">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-white text-left leading-tight">
         <i class="fa-solid fa-code text-blue-400"></i> UI Transformer
       </h1>
+
+  <div id="user-info" class="hidden text-sm text-gray-700"></div>
+
+  <button id="login-btn" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">
+    Login
+  </button>
+
+  <button id="logout-btn" class="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 text-sm py-2 rounded hidden">
+    Logout
+  </button>
+</div>
+
       <p class="text-gray-400 text-center text-base -mt-2">
-        Ubah website atau instruksi jadi HTML + TailwindCSS dengan AI
+        Ubah website atau instruksi untuk jadi HTML + TailwindCSS dengan AI
       </p>
 
       <!-- Toggle Mode -->
@@ -58,6 +72,23 @@
           placeholder="🧠 Contoh: Buatkan hero section untuk toko baju islami dengan Tailwind"
           class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 text-base mt-4"
         ></textarea>
+      </div>
+      
+      <!-- Model Selector UI -->
+      <div class="my-4">
+        <label for="model-select" class="block text-sm font-medium text-gray-500 mb-1">Pilih Model AI</label>
+        <select id="model-select" class="w-full px-4 py-2 text-gray-500 border border-gray-400 rounded-md">
+          <option value="@cf/qwen/qwen1.5-0.5b-chat" selected>⚡ Qwen 0.5B (Gratis)</option>
+          <option value="@cf/meta/llama-3.2-1b-instruct">🐣 LLaMA 3.2-1B (Gratis 2x/hari)</option>
+          <option value="@cf/mistralai/mistral-small-3.1-24b-instruct">🧠 Mistral 24B (Rp 7.500)</option>
+          <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧨 DeepSeek 32B (Rp 12.000)</option>
+        </select>
+        <div class="flex flex-wrap justify-between items-center-safe">
+        <p id="model-price" class="mt-2 text-sm text-gray-500">Harga: Gratis</p>
+        <button id="pay-now" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hidden">
+          🔒 Bayar untuk Akses
+        </button>
+        </div>
       </div>
 
       <!-- Generate Button -->
@@ -95,7 +126,7 @@
       </div>
         <label class="inline-flex items-center cursor-pointer">
           <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
-          <span class="text-sm text-gray-300">🌙 Preview Dark Mode</span>
+          <span class="text-sm text-gray-300">🌙</span>
         </label>
       </div>
     </div>
@@ -106,7 +137,23 @@
     <button id="close-preview" class="cursor-pointer absolute top-4 right-4 text-gray-500 hover:text-black">
       ❌
     </button>
-    <iframe id="preview-frame" class="w-full h-[36rem] border rounded-md shadow-md"></iframe>
+    <iframe id="preview-frame" class="w-full h-[36rem] border rounded-md shadow-md">
+          <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Contoh UI</title>
+      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-white flex items-center justify-center h-screen">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">🎨 UI Transformer</h1>
+        <p class="text-gray-600">Masukkan perintah dan lihat keajaibannya di sini!</p>
+      </div>
+    </body>
+    </html>
+    </iframe>
   </div>
 </div>
 
