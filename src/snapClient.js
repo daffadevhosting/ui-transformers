@@ -11,7 +11,6 @@ export function setupSnapCheckout() {
     const user = auth.currentUser;
 
     if (!user) {
-      //alert("🚫 Anda harus login terlebih dahulu sebelum melakukan pembayaran.");
       document.getElementById("login-modal")?.classList.remove("hidden"); // kalau punya modal login
       return;
     }

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Harga - UI Transformer</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
       body {
         font-family: 'Space Grotesk', sans-serif;
@@ -19,9 +20,24 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start text-gray-200 px-6 py-10">
+<div class="flex items-center w-full overflow-x-hidden px-6 justify-between space-x-4">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-white text-left leading-tight">
+        <i class="fa-solid fa-code text-blue-400"></i> UI Transformer
+      </h1>
 
-  <div class="max-w-4xl mx-auto py-16 px-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">💳 Pilih Paket Kamu</h1>
+  <div id="user-info" class="hidden text-sm text-gray-700"></div>
+
+  <!-- <button id="login-btn" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">
+    Login
+  </button> -->
+
+  <button id="logout-btn" class="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 text-sm py-2 rounded hidden">
+    Logout
+  </button>
+</div>
+
+  <div class="max-w-4xl mx-auto py-6 px-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">💳 Paket Pilihan</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Free Plan -->
@@ -34,7 +50,7 @@
           <li>🔒 Tidak bisa simpan</li>
           <li>🚫 Tanpa support</li>
         </ul>
-        <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded cursor-default" disabled>Aktif</button>
+        <span class="text-gray-600 rounded cursor-default" disabled>Aktif</span>
       </div>
 
       <!-- Pro Plan -->
@@ -47,9 +63,13 @@
           <li>✅ Deepseek R1 Distill</li>
           <li>📆 Berlaku 30 hari</li>
         </ul>
-        <button id="pay-pro-7500" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+        <span class="text-gray-600 rounded cursor-default" disabled>Aktif</span>
+       <!-- <button 
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded pay-button"
+          data-model="pro_25x" 
+          data-amount="7500">
           Beli Sekarang
-        </button>
+        </button> -->
       </div>
 
       <!-- Super Plan -->
@@ -62,9 +82,13 @@
           <li>🔥 Cocok buat power-user</li>
           <li>📆 Berlaku 30 hari</li>
         </ul>
-        <button id="pay-pro-12500" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+        <span class="text-gray-600 rounded cursor-default" disabled>Aktif</span>
+      <!--   <button 
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded pay-button"
+          data-model="pro_50x" 
+          data-amount="12500">
           Beli Sekarang
-        </button>
+        </button> -->
       </div>
     </div>
 
