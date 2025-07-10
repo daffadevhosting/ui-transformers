@@ -41,43 +41,32 @@
 </div>
 
       <p class="text-gray-400 text-center text-base -mt-2">
-        Ubah website atau instruksi untuk jadi HTML + TailwindCSS dengan AI
+        Redesign website atau instruksikan untuk jadi HTML + TailwindCSS dengan AI
       </p>
+      
+      <!-- Input: Website URL : Prompt Manual -->
+<div class="relative mt-4">
+  <textarea
+    id="multi-input"
+    class="w-full p-4 pr-12 border border-gray-300 rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 text-base"
+    placeholder="🔗 Masukkan URL website atau tulis instruksi desain..."
+    rows="2"
+  ></textarea>
 
-      <!-- Toggle Mode -->
-      <div class="flex justify-center gap-4 mt-4">
-        <button id="mode-url" class="cursor-pointer mode-btn bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
-          <i class="fa-solid fa-link"></i> Website URL
-        </button>
-        <button id="mode-prompt" class="cursor-pointer mode-btn text-white px-4 py-2 rounded-lg text-sm font-semibold">
-          <i class="fa-solid fa-keyboard"></i> Prompt Manual
-        </button>
-      </div>
-
-      <!-- Input: Website URL -->
-      <div id="input-url" class="input-group">
-        <input
-          type="text"
-          id="target-url"
-          placeholder="🔗 Contoh: https://github.com"
-          class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 text-base mt-4"
-        />
-      </div>
-
-      <!-- Input: Prompt Manual -->
-      <div id="input-prompt" class="input-group hidden">
-        <textarea
-          id="manual-prompt"
-          rows="3"
-          placeholder="🧠 Contoh: Buatkan hero section untuk toko baju islami dengan Tailwind"
-          class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 text-base mt-4"
-        ></textarea>
-      </div>
+  <!-- 🪄 Tombol Magic -->
+  <button
+    id="transform-button"
+    class="cursor-pointer absolute bottom-3 right-3 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3"
+    title="Generate UI dari input"
+  >
+    <i class="fa-solid fa-wand-magic-sparkles"></i>
+  </button>
+</div>
       
       <!-- Model Selector UI -->
       <div class="my-4">
         <label for="model-select" class="block text-sm font-medium text-gray-500 mb-1">Pilih Model AI</label>
-        <select id="model-select" class="w-full px-4 py-2 text-gray-500 border border-gray-400 rounded-md">
+        <select id="model-select" class="w-full cursor-pointer px-4 py-2 text-gray-500 border border-gray-400 rounded-md">
           <option value="@cf/qwen/qwen1.5-0.5b-chat" selected>⚡ Qwen 0.5B (Gratis)</option>
           <option value="@cf/meta/llama-3.2-1b-instruct">🐣 LLaMA 3.2-1B (Gratis 2x/hari)</option>
           <option value="@cf/mistralai/mistral-small-3.1-24b-instruct">🧠 Mistral 24B (Rp 7.500)</option>
@@ -85,19 +74,11 @@
         </select>
         <div class="flex flex-wrap justify-between items-center-safe">
         <p id="model-price" class="mt-2 text-sm text-gray-500">Harga: Gratis</p>
-        <button id="pay-now" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hidden">
+        <button id="pay-now" class="cursor-pointer mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hidden">
           🔒 Bayar untuk Akses
         </button>
         </div>
       </div>
-
-      <!-- Generate Button -->
-      <button type="button" 
-         id="transform-button"
-        class="cursor-pointer w-full bg-blue-600 text-white py-3 text-lg font-medium rounded-xl hover:bg-blue-700 transition-all"
-      >
-        <i class="fa-solid fa-wand-magic-sparkles"></i> Mulai Transformasi dengan AI
-      </button>
 
       <!-- Loading Spinner -->
       <div id="loading" class="hidden text-sm text-blue-400 animate-pulse text-center">
@@ -123,8 +104,11 @@
         <button id="show-preview" class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm">
           <i class="fa-solid fa-eye"></i> Pratinjau
         </button>
+        <a href="/pricing.html" class="cursor-pointer px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+          Upgrade Sekarang
+        </a>
       </div>
-        <label class="inline-flex items-center cursor-pointer">
+        <label class="inline-flex gap-3 items-center cursor-pointer">
           <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
           <span class="text-sm text-gray-300">🌙</span>
         </label>
@@ -154,6 +138,25 @@
     </body>
     </html>
     </iframe>
+  </div>
+</div>
+
+<!-- 🚫 Modal Limit Abis -->
+<div id="limit-modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden items-center justify-center">
+  <div class="bg-white p-6 rounded-xl max-w-sm w-full shadow-lg">
+    <h2 class="text-lg font-semibold text-red-600 mb-2">Batas Pemakaian Tercapai</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      Kamu sudah mencapai batas penggunaan untuk model ini.<br>
+      Silakan login atau upgrade paket untuk lanjut.
+    </p>
+    <div class="flex justify-end space-x-2">
+      <button id="close-limit-modal" class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
+        Nanti Saja
+      </button>
+      <a href="/pricing" class="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700">
+        Upgrade Sekarang
+      </a>
+    </div>
   </div>
 </div>
 

@@ -9,7 +9,6 @@ import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
 
 let token = "";
-let activeMode = 'url';
 
 // Ambil token setelah DOM ready
 document.addEventListener("DOMContentLoaded", async () => {
@@ -108,26 +107,6 @@ document.getElementById("logout-btn").addEventListener("click", logout);
     }, speed);
   }
 
-  const btnURL = document.getElementById('mode-url');
-  const btnPrompt = document.getElementById('mode-prompt');
-  const inputURL = document.getElementById('input-url');
-  const inputPrompt = document.getElementById('input-prompt');
-
-  btnURL.addEventListener('click', () => {
-    activeMode = 'url';
-    btnURL.classList.add('bg-blue-700');
-    btnPrompt.classList.remove('bg-blue-700');
-    inputURL.classList.remove('hidden');
-    inputPrompt.classList.add('hidden');
-  });
-
-  btnPrompt.addEventListener('click', () => {
-    activeMode = 'prompt';
-    btnPrompt.classList.add('bg-blue-700');
-    btnURL.classList.remove('bg-blue-700');
-    inputPrompt.classList.remove('hidden');
-    inputURL.classList.add('hidden');
-  });
 });
 
 document.getElementById("copy-button").addEventListener("click", () => {
@@ -143,29 +122,29 @@ export async function fetchUITransform() {
   const loading = document.getElementById("loading");
   const model = document.getElementById("model-select").value;
   const toggle = document.getElementById("dark-toggle");
-  let prompt = "";
+  const input = document.getElementById("multi-input").value.trim();
 
   output.textContent = "";
   iframe.src = "";
 
+  if (!input || input.length < 5) {
+    output.textContent = "🚨 Masukkan URL atau instruksi yang cukup jelas.";
+    return;
+  }
+
+  loading.classList.remove("hidden");
+
+  let prompt = "";
+  const isURL = /^https?:\/\//i.test(input);
+
   try {
-    if (activeMode === 'url') {
-      const url = document.getElementById("target-url").value;
-      if (!url) throw new Error("🚨 Masukkan URL terlebih dahulu.");
-
+    if (isURL) {
       output.textContent = "🔄 Mengambil konten dari URL...";
-      loading.classList.remove("hidden");
+      const rawHTML = await fetch(input).then(r => r.text());
 
-      const rawHTML = await fetch(url).then(r => r.text());
-      prompt = `Berikut adalah isi HTML dari website ${url}:\n\n${rawHTML}\n\nTolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS gunakan selalu title UI Transformer by Lyra. Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan. Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.`.trim();
-
+      prompt = `Berikut adalah isi HTML dari website ${input}:\n\n${rawHTML}\n\nTolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS gunakan selalu title UI Transformer by Lyra. Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan. Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.`.trim();
     } else {
-      const manualPrompt = document.getElementById("manual-prompt").value;
-      if (!manualPrompt || manualPrompt.trim().length < 5) {
-        throw new Error("🚨 Masukkan instruksi yang cukup jelas.");
-      }
-      prompt = manualPrompt.trim();
-      loading.classList.remove("hidden");
+      prompt = input;
     }
 
     const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
@@ -177,12 +156,17 @@ export async function fetchUITransform() {
       body: JSON.stringify({ prompt, model })
     });
 
-    // ✨ Tangani error HTTP dari backend (limit, dsb)
+    // ✨ Handle error backend
     if (!res.ok) {
       let errMsg = `❌ Gagal: ${res.status}`;
       try {
         const errData = await res.json();
-        if (errData?.error) errMsg = errData.error;
+        if (errData?.error) {
+          errMsg = errData.error;
+          if (errMsg.includes("Batas pemakaian")) {
+            showLimitModal();
+          }
+        }
       } catch (_) {}
       throw new Error(errMsg);
     }
@@ -202,10 +186,11 @@ export async function fetchUITransform() {
     if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
     if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
 
-    if (activeMode === 'url') {
-      fullHTML = fullHTML.replace(/<img\s+[^>]*src="[^"]+"\s*alt="([^"]*)"/g, (_, alt) => {
+    // 🔄 Ganti <img> src dengan placeholder (hanya jika asalnya URL)
+    if (isURL) {
+      fullHTML = fullHTML.replace(/<img\\s+[^>]*src=\"[^\"]+\"\\s*alt=\"([^\"]*)\"/g, (_, alt) => {
         const text = encodeURIComponent(alt || "Image");
-        return `<img src="https://placehold.co/300x200?text=${text}" alt="${alt}"`;
+        return `<img src=\"https://placehold.co/300x200?text=${text}\" alt=\"${alt}\"`;
       });
     }
 
@@ -230,5 +215,14 @@ export async function fetchUITransform() {
     loading.classList.add("hidden");
   }
 }
+
+export function showLimitModal() {
+  const modal = document.getElementById("limit-modal");
+  if (modal) modal.classList.remove("hidden");
+}
+
+document.getElementById("close-limit-modal")?.addEventListener("click", () => {
+  document.getElementById("limit-modal")?.classList.add("hidden");
+});
 
 window.fetchUITransform = fetchUITransform;

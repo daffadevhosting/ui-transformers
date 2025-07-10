@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Harga - UI Transformer</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .glassmorph {
+        background: rgba(17, 25, 40, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start text-gray-200 px-6 py-10">
+
+  <div class="max-w-4xl mx-auto py-16 px-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">💳 Pilih Paket Kamu</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Free Plan -->
+      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center">
+        <h2 class="text-xl font-bold mb-2">Gratis</h2>
+        <p class="text-gray-500 mb-4">Coba 2x generate model Qwen tanpa login</p>
+        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 0</span>
+        <ul class="text-sm text-gray-600 space-y-2 mb-6">
+          <li>✅ Akses model Qwen</li>
+          <li>🔒 Tidak bisa simpan</li>
+          <li>🚫 Tanpa support</li>
+        </ul>
+        <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded cursor-default" disabled>Aktif</button>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center border-2 border-blue-600">
+        <h2 class="text-xl font-bold mb-2">Pro 25x</h2>
+        <p class="text-gray-500 mb-4">Akses 25x generate model besar</p>
+        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 7.500</span>
+        <ul class="text-sm text-gray-600 space-y-2 mb-6">
+          <li>✅ Qwen, LLaMA 1B</li>
+          <li>✅ Deepseek R1 Distill</li>
+          <li>📆 Berlaku 30 hari</li>
+        </ul>
+        <button id="pay-pro-7500" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+          Beli Sekarang
+        </button>
+      </div>
+
+      <!-- Super Plan -->
+      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center">
+        <h2 class="text-xl font-bold mb-2">Pro 50x</h2>
+        <p class="text-gray-500 mb-4">Akses 50x generate semua model</p>
+        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 12.500</span>
+        <ul class="text-sm text-gray-600 space-y-2 mb-6">
+          <li>✅ Semua model premium</li>
+          <li>🔥 Cocok buat power-user</li>
+          <li>📆 Berlaku 30 hari</li>
+        </ul>
+        <button id="pay-pro-12500" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+          Beli Sekarang
+        </button>
+      </div>
+    </div>
+
+    <p class="mt-12 text-sm text-center text-gray-500">Pembayaran diproses melalui Midtrans. Aman & cepat.</p>
+  </div>
+
+  <script type="module" src="/src/pricingPages.js"></script>
+
+</body>
+</html>
