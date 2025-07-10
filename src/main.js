@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     </body>
 </html>`;
 
-  promptBox.value = ""; // kosongin dulu
+  promptBox.textContent = ""; // kosongin dulu
   typeEffect(promptBox, initialText);
 
   const auth = getAuth();
@@ -85,7 +85,7 @@ document.getElementById("logout-btn").addEventListener("click", logout);
   const output = document.getElementById("output");
 
   showBtn.addEventListener("click", () => {
-    const blob = new Blob([output.value], { type: "text/html" });
+    const blob = new Blob([output.textContent], { type: "text/html" });
     iframe.src = URL.createObjectURL(blob);
     modal.classList.remove("hidden");
   });
@@ -99,20 +99,14 @@ document.getElementById("logout-btn").addEventListener("click", logout);
     if (e.key === "Escape") modal.classList.add("hidden");
   });
 
-  function typeEffect(element, text, speed = 40) {
+  function typeEffect(element, text, speed = 5) {
     let i = 0;
     const interval = setInterval(() => {
-      element.value += text[i];
+      element.textContent += text[i];
       i++;
       if (i >= text.length) clearInterval(interval);
     }, speed);
   }
-
-function scrollToBottom(el) {
-  requestAnimationFrame(() => {
-    el.scrollTop = el.scrollHeight;
-  });
-}
 
   const btnURL = document.getElementById('mode-url');
   const btnPrompt = document.getElementById('mode-prompt');
@@ -138,7 +132,7 @@ function scrollToBottom(el) {
 
 document.getElementById("copy-button").addEventListener("click", () => {
   const output = document.getElementById("output");
-  navigator.clipboard.writeText(output.value)
+  navigator.clipboard.writeText(output.textContent)
     .then(() => alert("✅ Kode berhasil disalin!"))
     .catch(() => alert("❌ Gagal menyalin kode."));
 });
@@ -147,43 +141,34 @@ export async function fetchUITransform() {
   const output = document.getElementById("output");
   const iframe = document.getElementById("preview-frame");
   const loading = document.getElementById("loading");
+  const model = document.getElementById("model-select").value;
+  const toggle = document.getElementById("dark-toggle");
   let prompt = "";
 
-  if (activeMode === 'url') {
-    const url = document.getElementById("target-url").value;
-    if (!url) {
-      output.value = "🚨 Masukkan URL terlebih dahulu.";
-      return;
-    }
-
-    output.value = "🔄 Mengambil konten dari URL...";
-    loading.classList.remove("hidden");
-
-    try {
-      const rawHTML = await fetch(url).then(r => r.text());
-      prompt = `Berikut adalah isi HTML dari website ${url}:
-
-${rawHTML}
-
-Tolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS. Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan. Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.`.trim();
-    } catch (err) {
-      output.value = "⚠️ Gagal mengambil konten dari URL: " + err.message;
-      loading.classList.add("hidden");
-      return;
-    }
-  } else {
-    prompt = document.getElementById("manual-prompt").value;
-    if (!prompt || prompt.trim().length < 5) {
-      output.value = "🚨 Masukkan instruksi yang cukup jelas.";
-      return;
-    }
-    loading.classList.remove("hidden");
-  }
+  output.textContent = "";
+  iframe.src = "";
 
   try {
-    const model = document.getElementById("model-select").value;
+    if (activeMode === 'url') {
+      const url = document.getElementById("target-url").value;
+      if (!url) throw new Error("🚨 Masukkan URL terlebih dahulu.");
 
-    const res = await fetch("http://localhost:8787", {
+      output.textContent = "🔄 Mengambil konten dari URL...";
+      loading.classList.remove("hidden");
+
+      const rawHTML = await fetch(url).then(r => r.text());
+      prompt = `Berikut adalah isi HTML dari website ${url}:\n\n${rawHTML}\n\nTolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS gunakan selalu title UI Transformer by Lyra. Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan. Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.`.trim();
+
+    } else {
+      const manualPrompt = document.getElementById("manual-prompt").value;
+      if (!manualPrompt || manualPrompt.trim().length < 5) {
+        throw new Error("🚨 Masukkan instruksi yang cukup jelas.");
+      }
+      prompt = manualPrompt.trim();
+      loading.classList.remove("hidden");
+    }
+
+    const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -192,49 +177,55 @@ Tolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS. Jik
       body: JSON.stringify({ prompt, model })
     });
 
-    if (!res.body) {
-      output.value = "❌ Gagal mendapatkan stream dari AI.";
-      loading.classList.add("hidden");
-      return;
+    // ✨ Tangani error HTTP dari backend (limit, dsb)
+    if (!res.ok) {
+      let errMsg = `❌ Gagal: ${res.status}`;
+      try {
+        const errData = await res.json();
+        if (errData?.error) errMsg = errData.error;
+      } catch (_) {}
+      throw new Error(errMsg);
     }
 
+    if (!res.body) throw new Error("❌ Gagal mendapatkan stream dari AI.");
+
     let fullHTML = "";
-    output.value = "";
-    iframe.src = "";
-
     await streamAndRenderAI(res, (chunk) => {
-      output.value += chunk;
+      output.textContent += chunk;
       fullHTML += chunk;
-
-    scrollToBottom(output);
+      requestAnimationFrame(() => {
+        output.scrollTop = output.scrollHeight;
+      });
     });
 
+    fullHTML = fullHTML.trim();
     if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
     if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
 
-    fullHTML = fullHTML.replace(/<img\s+[^>]*src="[^"]+"\s*alt="([^"]*)"/g, (match, alt) => {
-      const text = encodeURIComponent(alt || "Image");
-      return `<img src="https://placehold.co/300x200?text=${text}" alt="${alt}"`;
-    });
+    if (activeMode === 'url') {
+      fullHTML = fullHTML.replace(/<img\s+[^>]*src="[^"]+"\s*alt="([^"]*)"/g, (_, alt) => {
+        const text = encodeURIComponent(alt || "Image");
+        return `<img src="https://placehold.co/300x200?text=${text}" alt="${alt}"`;
+      });
+    }
 
     if (fullHTML.length < 1000) {
-      output.value += "\n\n✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.";
+      output.textContent += "\n\n✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.";
     }
 
     const blob = new Blob([fullHTML], { type: "text/html" });
     iframe.src = URL.createObjectURL(blob);
 
     iframe.onload = () => {
-      const toggle = document.getElementById("dark-toggle");
-      if (toggle.checked) {
-        const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
+      if (toggle?.checked && previewDoc) {
         previewDoc.documentElement.classList.add("dark");
         previewDoc.body.classList.add("bg-gray-900", "text-white");
       }
     };
 
   } catch (err) {
-    output.value = "⚠️ Terjadi kesalahan: " + err.message;
+    output.textContent = err.message || "⚠️ Terjadi kesalahan tidak diketahui.";
   } finally {
     loading.classList.add("hidden");
   }
