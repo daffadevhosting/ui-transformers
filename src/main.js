@@ -1,4 +1,5 @@
 import { streamAndRenderAI } from './streamAndRender.js';
+import { safePrompt } from './utils/promptBuilder.js';
 
 let activeMode = 'url';
 
@@ -7,7 +8,8 @@ export async function fetchUITransform() {
   const iframe = document.getElementById("preview-frame");
   const loading = document.getElementById("loading");
 
-  let prompt = "";
+  const rawHTML = await fetch(url).then(r => r.text());
+  const prompt = safePrompt({ html: rawHTML, url });
 
   if (activeMode === 'url') {
     const url = document.getElementById("target-url").value;
@@ -118,6 +120,28 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+const showBtn = document.getElementById("show-preview");
+const modal = document.getElementById("preview-modal");
+const closeBtn = document.getElementById("close-preview");
+const iframe = document.getElementById("preview-frame");
+const output = document.getElementById("output");
+
+showBtn.addEventListener("click", () => {
+  const blob = new Blob([output.value], { type: "text/html" });
+  iframe.src = URL.createObjectURL(blob);
+  modal.classList.remove("hidden");
+});
+
+closeBtn.addEventListener("click", () => {
+  modal.classList.add("hidden");
+  iframe.src = ""; // bersihin iframe saat ditutup
+});
+
+// Tutup modal dengan tombol ESC
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") modal.classList.add("hidden");
+});
 
   const btnURL = document.getElementById('mode-url');
   const btnPrompt = document.getElementById('mode-prompt');

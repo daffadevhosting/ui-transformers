@@ -82,28 +82,36 @@
 
       <!-- Action Bar -->
       <div class="flex flex-wrap justify-between items-center gap-4">
+      <div class="flex flex-wrap gap-2 items-center-safe">
         <button
            id="copy-button"
           class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm"
         >
-          <i class="fa-solid fa-copy"></i> Salin Kode
+          <i class="fa-solid fa-copy"></i> Salin
         </button>
-
+        <button id="show-preview" class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm">
+          <i class="fa-solid fa-eye"></i> Pratinjau
+        </button>
+      </div>
         <label class="inline-flex items-center cursor-pointer">
           <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
           <span class="text-sm text-gray-300">🌙 Preview Dark Mode</span>
         </label>
       </div>
-
-      <!-- Preview Panel -->
-      <div class="space-y-2 mt-6">
-        <h2 class="text-lg font-semibold text-gray-300"><i class="fa-solid fa-eye"></i> Pratinjau Langsung</h2>
-        <iframe id="preview-frame" class="w-full h-[34rem] p-4 border border-gray-300 rounded-xl bg-white"></iframe>
-      </div>
     </div>
 
+<!-- Modal Preview -->
+<div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-lg w-11/12 max-w-5xl p-4 relative">
+    <button id="close-preview" class="cursor-pointer absolute top-4 right-4 text-gray-500 hover:text-black">
+      ❌
+    </button>
+    <iframe id="preview-frame" class="w-full h-[36rem] border rounded-md shadow-md"></iframe>
+  </div>
+</div>
+
     <footer class="mt-12 text-sm text-gray-500 text-center">
-      Dibuat dengan ❤️ oleh Dev Lokal • <a href="#" class="underline hover:text-white">GitHub</a>
+      Dibuat dengan ❤️ oleh Dev Lokal • <a href="https://github.com/daffadevhosting/ui-transformers" target="_blank" class="underline hover:text-white"><i class="fa-brands fa-github"></i> GitHub</a>
     </footer>
 
     <script type="module" src="/src/main.js"></script>
