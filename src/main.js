@@ -67,19 +67,29 @@ document.getElementById("logout-btn").addEventListener("click", logout);
   const iframe = document.getElementById("preview-frame");
   const output = document.getElementById("output");
 
-  showBtn.addEventListener("click", () => {
+
+  showBtn?.addEventListener("click", () => {
     const blob = new Blob([output.textContent], { type: "text/html" });
     iframe.src = URL.createObjectURL(blob);
+
     modal.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      modal.classList.add("show");
+    });
   });
 
-  closeBtn.addEventListener("click", () => {
-    modal.classList.add("hidden");
-    iframe.src = "";
-  });
+  function closeModal() {
+    modal.classList.remove("show");
+    setTimeout(() => {
+      modal.classList.add("hidden");
+      iframe.src = "";
+    }, 500);
+  }
+
+  closeBtn?.addEventListener("click", closeModal);
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") modal.classList.add("hidden");
+    if (e.key === "Escape") closeModal();
   });
 
   function typeEffect(element, text, speed = 5) {
@@ -105,7 +115,6 @@ export async function fetchUITransform() {
   const iframe = document.getElementById("preview-frame");
   const loading = document.getElementById("loading");
   const model = document.getElementById("model-select").value;
-  const toggle = document.getElementById("dark-toggle");
   const input = document.getElementById("multi-input").value.trim();
 
   output.textContent = "";
@@ -131,7 +140,7 @@ export async function fetchUITransform() {
       prompt = input;
     }
 
-    const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
+    const res = await fetch("http://localhost:8787", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -169,17 +178,8 @@ export async function fetchUITransform() {
     fullHTML = fullHTML.trim();
     if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
     if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
-
-    // 🔄 Ganti <img> src dengan placeholder (hanya jika asalnya URL)
-    if (isURL) {
-      fullHTML = fullHTML.replace(/<img\\s+[^>]*src=\"[^\"]+\"\\s*alt=\"([^\"]*)\"/g, (_, alt) => {
-        const text = encodeURIComponent(alt || "Image");
-        return `<img src=\"https://placehold.co/300x200?text=${text}\" alt=\"${alt}\"`;
-      });
-    }
-
     if (fullHTML.length < 1000) {
-      output.textContent += "\n\n✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.";
+      output.textContent += "✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.\n";
     }
 
     const blob = new Blob([fullHTML], { type: "text/html" });
@@ -187,10 +187,6 @@ export async function fetchUITransform() {
 
     iframe.onload = () => {
       const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
-      if (toggle?.checked && previewDoc) {
-        previewDoc.documentElement.classList.add("dark");
-        previewDoc.body.classList.add("bg-gray-900", "text-white");
-      }
     };
 
   } catch (err) {

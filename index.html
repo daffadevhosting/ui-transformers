@@ -17,6 +17,16 @@
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
+      #preview-modal {
+        backdrop-filter: blur(4px);
+      }
+      #preview-frame {
+        background-color: white;
+      }
+      #preview-modal.show #preview-content {
+        opacity: 1;
+        transform: translateY(0);
+      }
     </style>
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-i2KW02MfN9duiyJ9"></script>
   </head>
@@ -114,28 +124,21 @@
     </div>
 
 <!-- Modal Preview -->
-<div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center">
-  <div class="glassmorph text-gray-300 rounded-lg w-11/12 max-w-5xl p-4 relative">
-    <button id="close-preview" class="cursor-pointer absolute top-4 right-4 text-gray-500 hover:text-black">
-      ❌
+<div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+  <div
+    id="preview-content"
+    class="w-full h-full opacity-0 translate-y-10 transition-all duration-700 ease-out"
+  >
+    <button id="close-preview"
+      class="absolute cursor-pointer top-5 right-5 z-50 text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg shadow-lg">
+    <i class="fa-solid fa-circle-xmark"></i>
     </button>
-    <iframe id="preview-frame" class="w-full h-[36rem] border rounded-md shadow-md">
-          <!DOCTYPE html>
-    <html lang="id">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Contoh UI</title>
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-white flex items-center justify-center h-screen">
-      <div class="text-center">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">🎨 UI Transformer</h1>
-        <p class="text-gray-600">Masukkan perintah dan lihat keajaibannya di sini!</p>
-      </div>
-    </body>
-    </html>
-    </iframe>
+
+    <iframe
+      id="preview-frame"
+      class="w-full h-full border-none rounded-md shadow-2xl"
+      sandbox="allow-scripts allow-same-origin"
+    ></iframe>
   </div>
 </div>
 
