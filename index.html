@@ -19,57 +19,93 @@
       }
     </style>
   </head>
-<body class="bg-gradient-to-br from-gray-900 to-black font-sans min-h-screen flex flex-col items-center justify-start px-6 py-10">
-  <div class="glassmorph w-full max-w-3xl bg-gray-800 shadow-xl rounded-2xl p-8 space-y-6 border border-gray-200">
+  <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start px-6 py-10">
 
-    <h1 class="text-3xl font-bold text-gray-400 text-center">
-          <i class="fa-solid fa-code text-blue-400 text-3xl mb-4"></i> Transformasi UI Website dengan AI</h1>
+    <div class="glassmorph w-full max-w-3xl bg-gray-800 shadow-xl rounded-2xl p-8 space-y-6 border border-gray-200">
 
-    <!-- URL Input -->
-    <input
-      type="text"
-      id="target-url"
-      placeholder="🔗 Contoh: https://github.com"
-      class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-base"
-    />
+      <h1 class="text-4xl font-extrabold text-white text-center leading-tight">
+        <i class="fa-solid fa-code text-blue-400"></i> UI Transformer
+      </h1>
+      <p class="text-gray-400 text-center text-base -mt-2">
+        Ubah website atau instruksi jadi HTML + TailwindCSS dengan AI
+      </p>
 
-    <!-- Generate Button -->
-    <button type="button" 
-       id="transform-button"
-      class="w-full bg-blue-600 text-white py-3 text-lg font-medium rounded-xl hover:bg-blue-700 transition-all"
-    >
-      <i class="fa-solid fa-shuffle"></i> Mulai Transformasi dengan AI
-    </button>
+      <!-- Toggle Mode -->
+      <div class="flex justify-center gap-4 mt-4">
+        <button id="mode-url" class="cursor-pointer mode-btn bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+          <i class="fa-solid fa-link"></i> Website URL
+        </button>
+        <button id="mode-prompt" class="cursor-pointer mode-btn text-white px-4 py-2 rounded-lg text-sm font-semibold">
+          <i class="fa-solid fa-keyboard"></i> Prompt Manual
+        </button>
+      </div>
 
-    <!-- Output -->
-    <textarea
-      id="output"
-      class="w-full h-72 p-4 border border-gray-200 rounded-xl font-mono text-sm resize bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="💡 Kode HTML + Tailwind akan muncul di sini..."
-    ></textarea>
+      <!-- Input: Website URL -->
+      <div id="input-url" class="input-group">
+        <input
+          type="text"
+          id="target-url"
+          placeholder="🔗 Contoh: https://github.com"
+          class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 text-base mt-4"
+        />
+      </div>
 
-    <!-- Copy + Dark Mode -->
-    <div class="flex flex-wrap justify-between items-center gap-4">
-      <button
-        onclick="copyToClipboard()"
-        class="bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm"
+      <!-- Input: Prompt Manual -->
+      <div id="input-prompt" class="input-group hidden">
+        <textarea
+          id="manual-prompt"
+          rows="3"
+          placeholder="🧠 Contoh: Buatkan hero section untuk toko baju islami dengan Tailwind"
+          class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 text-base mt-4"
+        ></textarea>
+      </div>
+
+      <!-- Generate Button -->
+      <button type="button" 
+         id="transform-button"
+        class="cursor-pointer w-full bg-blue-600 text-white py-3 text-lg font-medium rounded-xl hover:bg-blue-700 transition-all"
       >
-        <i class="fa-solid fa-copy"></i> Salin Kode
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Mulai Transformasi dengan AI
       </button>
 
-      <label class="inline-flex items-center cursor-pointer">
-        <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
-        <span class="text-sm text-gray-600">🌙 Aktifkan Dark Mode Preview</span>
-      </label>
+      <!-- Loading Spinner -->
+      <div id="loading" class="hidden text-sm text-blue-400 animate-pulse text-center">
+        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Sedang memproses dengan AI...
+      </div>
+
+      <!-- Output Area -->
+      <textarea
+        id="output"
+        class="w-full min-h-[15rem] max-h-[50vh] p-2.5 border border-gray-300 rounded-xl font-mono text-sm resize-y bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="💡 Kode HTML + Tailwind akan muncul di sini..."
+      ></textarea>
+
+      <!-- Action Bar -->
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <button
+           id="copy-button"
+          class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm"
+        >
+          <i class="fa-solid fa-copy"></i> Salin Kode
+        </button>
+
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
+          <span class="text-sm text-gray-300">🌙 Preview Dark Mode</span>
+        </label>
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="space-y-2 mt-6">
+        <h2 class="text-lg font-semibold text-gray-300"><i class="fa-solid fa-eye"></i> Pratinjau Langsung</h2>
+        <iframe id="preview-frame" class="w-full h-[34rem] p-4 border border-gray-300 rounded-xl bg-white"></iframe>
+      </div>
     </div>
 
-    <!-- Preview -->
-    <div class="space-y-2 mt-6">
-      <h2 class="text-lg font-semibold text-gray-700"><i class="fa-solid fa-magnifying-glass"></i> Pratinjau Realtime</h2>
-      <iframe id="preview-frame" class="w-full h-[34rem] p-4 border border-gray-300 rounded-xl bg-white"></iframe>
-    </div>
-  </div>
+    <footer class="mt-12 text-sm text-gray-500 text-center">
+      Dibuat dengan ❤️ oleh Dev Lokal • <a href="#" class="underline hover:text-white">GitHub</a>
+    </footer>
 
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
