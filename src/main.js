@@ -3,7 +3,7 @@
 import { streamAndRenderAI } from './streamAndRender.js';
 import { safePrompt } from './utils/promptBuilder.js';
 import { setupModelPricingUI } from './modelHandler.js';
-import { setupLoginUI } from './loginUI.js';
+import { setupLoginUI, setupLoginModal } from './loginUI.js';
 import { setupSnapCheckout } from './snapClient.js';
 import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupSnapCheckout();
   setupModelPricingUI();
   setupLoginUI();
+  setupLoginModal();
 
   const promptBox = document.getElementById("output");
   const initialText = `<!doctype html>
@@ -58,23 +59,6 @@ document.getElementById("logout-btn").addEventListener("click", logout);
   const btn = document.getElementById("transform-button");
   if (btn) {
     btn.addEventListener("click", fetchUITransform);
-  }
-
-  const toggle = document.getElementById("dark-toggle");
-  if (toggle) {
-    toggle.addEventListener("change", function (e) {
-      const iframe = document.getElementById("preview-frame");
-      const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!previewDoc) return;
-
-      if (e.target.checked) {
-        previewDoc.documentElement.classList.add("dark");
-        previewDoc.body.classList.add("bg-gray-900", "text-white");
-      } else {
-        previewDoc.documentElement.classList.remove("dark");
-        previewDoc.body.classList.remove("bg-gray-900", "text-white");
-      }
-    });
   }
 
   const showBtn = document.getElementById("show-preview");
@@ -220,7 +204,6 @@ export function showLimitModal() {
   const modal = document.getElementById("limit-modal");
   if (modal) modal.classList.remove("hidden");
 }
-
 document.getElementById("close-limit-modal")?.addEventListener("click", () => {
   document.getElementById("limit-modal")?.classList.add("hidden");
 });

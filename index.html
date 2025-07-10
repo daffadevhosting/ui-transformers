@@ -104,13 +104,11 @@
         <button id="show-preview" class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm">
           <i class="fa-solid fa-eye"></i> Pratinjau
         </button>
+      </div>
+        <label class="inline-flex gap-3 items-center cursor-pointer">
         <a href="/pricing.html" class="cursor-pointer px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700">
           Upgrade Sekarang
         </a>
-      </div>
-        <label class="inline-flex gap-3 items-center cursor-pointer">
-          <input type="checkbox" id="dark-toggle" class="form-checkbox text-blue-600 mr-2">
-          <span class="text-sm text-gray-300">🌙</span>
         </label>
       </div>
     </div>
@@ -157,6 +155,29 @@
         Upgrade Sekarang
       </a>
     </div>
+  </div>
+</div>
+
+<!-- 🔐 Modal Login with Drama -->
+<div id="login-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center transition-opacity duration-300">
+  <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-scale-in text-center relative">
+    <div class="absolute -top-5 left-1/2 transform -translate-x-1/2">
+      <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs shadow-lg uppercase tracking-wide">
+        Premium Access
+      </div>
+    </div>
+    <h2 class="text-2xl font-bold mb-2 text-gray-800">🚀 Buka Pintu Keajaiban!</h2>
+    <p class="text-sm text-gray-600 mb-5">Login dulu, baru bisa ngintip fitur-fitur sakti dari Lyra ✨</p>
+    <button
+      id="google-login-btn"
+      class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full font-medium transition duration-300"
+    >
+      <i class="fa-brands fa-google mr-2"></i> Masuk dengan Google
+    </button>
+    <p class="mt-4 text-xs text-gray-500">Tenang... Gak ada yang dikirim ke grup WA keluarga 😌</p>
+    <button id="close-login-modal" class="mt-3 text-sm text-gray-500 hover:underline">
+      Nanti aja, aku takut sukses
+    </button>
   </div>
 </div>
 

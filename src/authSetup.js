@@ -29,6 +29,8 @@ export async function signInWithGoogle() {
   }
 }
 
+export { GoogleAuthProvider, getAuth, signInWithPopup };
+
 export function logout() {
   signOut(auth);
 }

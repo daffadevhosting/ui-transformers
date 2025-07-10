@@ -2,7 +2,10 @@
 import {
   signInWithGoogle,
   logout,
-  onAuthChange
+  onAuthChange,
+  getAuth, 
+  signInWithPopup, 
+  GoogleAuthProvider
 } from './authSetup.js';
 
 export function setupLoginUI() {
@@ -26,4 +29,32 @@ export function setupLoginUI() {
       userInfo.innerText = "";
     }
   });
+}
+
+export function setupLoginModal() {
+  const modal = document.getElementById("login-modal");
+  const openLogin = () => modal.classList.remove("hidden");
+  const closeLogin = () => modal.classList.add("hidden");
+
+  // Tombol Google Login
+  document.getElementById("google-login-btn").addEventListener("click", async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const auth = getAuth();
+      await signInWithPopup(auth, provider);
+      closeLogin(); // Tutup modal setelah login sukses
+    } catch (err) {
+      alert("❌ Gagal login: " + err.message);
+    }
+  });
+
+  // Tombol batal
+  document.getElementById("close-login-modal").addEventListener("click", closeLogin);
+
+  // Ekspor pemicu manual
+  window.requireLogin = () => {
+    const user = getAuth().currentUser;
+    if (!user) openLogin();
+    return !!user;
+  };
 }
