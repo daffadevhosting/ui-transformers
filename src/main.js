@@ -140,7 +140,7 @@ export async function fetchUITransform() {
       prompt = input;
     }
 
-    const res = await fetch("https://localhost:8787/", {
+    const res = await fetch("http://localhost:8787/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
