@@ -2,9 +2,8 @@
 
 Transformasi antarmuka berbasis AI, dari URL atau prompt, jadi halaman statis TailwindCSS yang ringan, responsif, dan siap pakai. Project ini dibangun dengan semangat minimalis dan kecepatan ⚡️.
 
-[![Build](https://img.shields.io/github/actions/workflow/status/daffadevhosting/ui-transformers/ci.yml?branch=main)](https://github.com/daffadevhosting/ui-transformers/actions)
 [![License](https://img.shields.io/github/license/daffadevhosting/ui-transformers)](LICENSE)
-[![Deploy](https://img.shields.io/badge/Cloudflare-Live-green)](https://ui-transformers.androidbutut.workers.dev)
+[![Deploy](https://img.shields.io/badge/Cloudflare-Live-green)](https://glitchlab-master.daffadev.workers.dev/)
 
 ---
 

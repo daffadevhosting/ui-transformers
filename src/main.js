@@ -7,6 +7,7 @@ import { setupLoginUI, setupLoginModal } from './loginUI.js';
 import { setupSnapCheckout } from './snapClient.js';
 import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
+import { getModelPrice } from './premiumAccess.js';
 
 let token = "";
 
@@ -125,6 +126,11 @@ export async function fetchUITransform() {
     return;
   }
 
+  if (!token && getModelPrice(model) > 0) {
+    showPricingModal();
+    return;
+  }
+
   loading.classList.remove("hidden");
 
   let prompt = "";
@@ -140,7 +146,7 @@ export async function fetchUITransform() {
       prompt = input;
     }
 
-    const res = await fetch("http://localhost:8787/", {
+    const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -149,20 +155,25 @@ export async function fetchUITransform() {
       body: JSON.stringify({ prompt, model })
     });
 
-    // ✨ Handle error backend
-    if (!res.ok) {
-      let errMsg = `❌ Gagal: ${res.status}`;
-      try {
-        const errData = await res.json();
-        if (errData?.error) {
-          errMsg = errData.error;
-          if (errMsg.includes("Batas pemakaian")) {
-            showLimitModal();
-          }
-        }
-      } catch (_) {}
-      throw new Error(errMsg);
+if (!res.ok) {
+  let errMsg = `❌ Gagal: ${res.status}`;
+  try {
+    const errData = await res.json();
+    if (errData?.error) {
+      errMsg = errData.error;
+
+      if (
+        res.status === 429 ||
+        errMsg.includes("Batas pemakaian") ||
+        errMsg.includes("Kuota harian gratis")
+      ) {
+        showLimitModal(errMsg);
+      }
     }
+  } catch (_) {}
+
+  throw new Error(errMsg);
+}
 
     if (!res.body) throw new Error("❌ Gagal mendapatkan stream dari AI.");
 
@@ -175,19 +186,39 @@ export async function fetchUITransform() {
       });
     });
 
-    fullHTML = fullHTML.trim();
-    if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
-    if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
-    if (fullHTML.length < 1000) {
-      output.textContent += "✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.\n";
-    }
+fullHTML = fullHTML.trim();
 
-    const blob = new Blob([fullHTML], { type: "text/html" });
-    iframe.src = URL.createObjectURL(blob);
+// Buang wrapper Markdown
+if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
+if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
 
-    iframe.onload = () => {
-      const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
-    };
+let displayedHTML = fullHTML;
+if (fullHTML.length < 1000) {
+  displayedHTML += "✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.\n\n";
+}
+output.textContent = displayedHTML;
+let cleanHTML = fullHTML.trim();
+
+cleanHTML = cleanHTML
+  .replace(/^<think>[\s\S]*?<\/think>/i, "")
+  .replace(/^✅.*?\n/i, "")
+  .replace(/^```html/i, "")
+  .replace(/```$/i, "")
+  .replace(/https:\/\/use\s+tailwindcss\.com\S*/gi, "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+  .trim();
+
+const doctypeIndex = cleanHTML.indexOf("<!DOCTYPE html>");
+if (doctypeIndex !== -1) {
+  cleanHTML = cleanHTML.slice(doctypeIndex);
+}
+
+iframe.src = "";
+const blob = new Blob([cleanHTML], { type: "text/html" });
+iframe.src = URL.createObjectURL(blob);
+
+iframe.onload = () => {
+  const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
+};
 
   } catch (err) {
     output.textContent = err.message || "⚠️ Terjadi kesalahan tidak diketahui.";
@@ -196,12 +227,28 @@ export async function fetchUITransform() {
   }
 }
 
-export function showLimitModal() {
-  const modal = document.getElementById("limit-modal");
-  if (modal) modal.classList.remove("hidden");
+function showPricingModal() {
+  document.getElementById('pricing-modal')?.classList.remove('hidden');
 }
-document.getElementById("close-limit-modal")?.addEventListener("click", () => {
-  document.getElementById("limit-modal")?.classList.add("hidden");
+
+function showLimitModal(message = "🚫 Kuota habis. Silakan upgrade.") {
+  const modal = document.getElementById("limit-modal");
+  const modalMessage = document.getElementById("limit-message");
+
+  if (modal) {
+    if (modalMessage) modalMessage.textContent = message;
+    modal.classList.remove("hidden");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("close-limit-modal");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      const modal = document.getElementById("limit-modal");
+      if (modal) modal.classList.add("hidden");
+    });
+  }
 });
 
 window.fetchUITransform = fetchUITransform;
