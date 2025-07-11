@@ -140,7 +140,7 @@ export async function fetchUITransform() {
       prompt = input;
     }
 
-    const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
+    const res = await fetch("https://localhost:8787/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
