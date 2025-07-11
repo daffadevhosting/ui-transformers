@@ -18,7 +18,7 @@ const db = getFirestore(app);
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const uid = user.uid;
+    const uid = user?.uid || null;
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 

@@ -15,7 +15,7 @@ export function setupSnapCheckout() {
       return;
     }
     
-    const uid = currentUser?.uid || null;
+    const uid = user?.uid || null;
     const model = modelSelect.value;
     const amount = MODEL_PRICING[model] || 0;
     const orderId = `order-${Date.now()}`;
