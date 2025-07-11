@@ -11,10 +11,11 @@ export function setupSnapCheckout() {
     const user = auth.currentUser;
 
     if (!user) {
-      document.getElementById("login-modal")?.classList.remove("hidden"); // kalau punya modal login
+      document.getElementById("login-modal")?.classList.remove("hidden");
       return;
     }
-
+    
+    const uid = currentUser?.uid || null;
     const model = modelSelect.value;
     const amount = MODEL_PRICING[model] || 0;
     const orderId = `order-${Date.now()}`;
@@ -23,7 +24,7 @@ export function setupSnapCheckout() {
       const res = await fetch("https://midtranspay.androidbutut.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, gross_amount: amount, model })
+        body: JSON.stringify({ orderId, gross_amount: amount, model, uid })
       });
 
       const data = await res.json();
