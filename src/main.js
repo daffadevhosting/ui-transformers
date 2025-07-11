@@ -8,6 +8,7 @@ import { setupSnapCheckout } from './snapClient.js';
 import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
 import { getModelPrice } from './premiumAccess.js';
+import { updatePricingUI } from "./accessControl.js";
 
 let token = "";
 
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     <body class="bg-gray-50 flex flex-col justify-center items-center min-h-screen text-center p-6">
       <h1 class="text-3xl font-bold text-clifford mb-2">👋 Selamat datang!</h1>
       <p class="text-gray-600 max-w-md">Tulis perintah desain atau masukkan URL website, dan aku akan bantu generate ulang tampilannya dengan Tailwind CSS ✨</p>
+      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra sedang dalam perbaikan dulu, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
     </body>
 </html>`;
 
@@ -45,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = auth.currentUser;
   if (user) {
     token = await user.getIdToken();
+      await updatePricingUI(user.uid);
   }
 
   onAuthChange((user) => {
@@ -53,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } else {
     console.log("❌ User logged out");
   }
-});
+  });
 
 document.getElementById("login-btn").addEventListener("click", signInWithGoogle);
 document.getElementById("logout-btn").addEventListener("click", logout);

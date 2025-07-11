@@ -18,7 +18,7 @@ Berikut adalah isi HTML dari website ${url}:
 ${cleaned}
 
 Tolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS.
-Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/300x200 dengan teks yang relevan.
+Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan.
 Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.
 `.trim();
 }

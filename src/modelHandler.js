@@ -1,4 +1,7 @@
 // modelHandler.js
+import { hasModelAccess } from "./accessControl.js";
+import { getAuth } from "firebase/auth";
+
 
 export const MODEL_PRICING = {
   "@cf/qwen/qwen1.5-0.5b-chat": 0,
@@ -13,9 +16,16 @@ export function setupModelPricingUI() {
   const payButton = document.getElementById("pay-now");
 
   modelSelect.addEventListener("change", () => {
+  const auth = getAuth();
+  const uid = auth.currentUser;
     const selected = modelSelect.value;
     const price = MODEL_PRICING[selected] || 0;
     const requiresLogin = selected === "@cf/meta/llama-3.2-1b-instruct";
+    const allowed = hasModelAccess(uid, modelSelect);
+    if (!allowed) {
+      alert("🚫 Kamu belum membeli model ini.");
+      return;
+    }
 
     if (price === 0) {
       if (requiresLogin) {
