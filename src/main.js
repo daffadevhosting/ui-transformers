@@ -133,27 +133,29 @@ export async function fetchUITransform() {
 
   loading.classList.remove("hidden");
 
-  let prompt = "";
-  const isURL = /^https?:\/\//i.test(input);
 
   try {
-    if (isURL) {
-      output.textContent = "🔄 Mengambil konten dari URL...";
-      const rawHTML = await fetch(input).then(r => r.text());
+const model = document.getElementById("model-select").value;
+const userInput = document.getElementById("multi-input").value.trim();
+const isURL = /^https?:\/\//i.test(userInput);
+const activeType = isURL ? "url" : "generate";
 
-      prompt = `Berikut adalah isi HTML dari website ${input}:\n\n${rawHTML}\n\nTolong buatkan ulang tampilan ini sebagai halaman statis HTML + TailwindCSS gunakan selalu title UI Transformer by Lyra. Jika menggunakan elemen <img>, gunakan placeholder dari https://placehold.co/ dengan teks yang relevan. Jangan sertakan JavaScript atau dependensi dinamis. Gunakan struktur yang bersih dan responsif.`.trim();
-    } else {
-      prompt = input;
-    }
+const payload = {
+  input: userInput,
+  type: activeType,
+  model
+};
 
-    const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` })
-      },
-      body: JSON.stringify({ prompt, model })
-    });
+console.log("Data yang dikirim ke backend:", JSON.stringify(payload, null, 2));
+
+const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` })
+  },
+  body: JSON.stringify(payload)
+});
 
 if (!res.ok) {
   let errMsg = `❌ Gagal: ${res.status}`;
@@ -194,7 +196,7 @@ if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
 
 let displayedHTML = fullHTML;
 if (fullHTML.length < 1000) {
-  displayedHTML += "✅ Output pendek, tapi HTML valid. Cek dulu hasilnya, yaa.\n\n";
+  displayedHTML += "";
 }
 output.textContent = displayedHTML;
 let cleanHTML = fullHTML.trim();
