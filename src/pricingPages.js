@@ -1,85 +1,94 @@
-import { unlockModel } from './premiumAccess.js';
-import { setupSnapCheckout } from './snapClient.js';
-import { getAuth } from "./authSetup.js";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-  const payButtons =  document.querySelectorAll(".pay-button");
-payButtons.forEach(button => {
-  button.addEventListener("click", async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (!user) {
-      document.getElementById("login-modal")?.classList.remove("hidden"); // kalau punya modal login
-      return;
-    }
-
-    const model = modelSelect.value;
-    const amount = MODEL_PRICING[model] || 0;
-    const orderId = `order-${Date.now()}`;
-
-    try {
-      const res = await fetch("https://midtranspay.androidbutut.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, gross_amount: amount, model })
-      });
-
-      const data = await res.json();
-
-      if (!data.token) {
-        alert("❌ Gagal mendapatkan Snap token.");
-        return;
-      }
-
-      window.snap.pay(data.token, {
-        onSuccess: function (result) {
-          unlockModel(model);
-          alert("✅ Pembayaran berhasil!");
-          window.location.href = "/success.html?order_id=" + result.order_id;
-        },
-        onPending: function () {
-          alert("⏳ Pembayaran menunggu konfirmasi.");
-        },
-        onError: function () {
-          alert("❌ Pembayaran gagal.");
-        },
-        onClose: function () {
-          console.log("🛑 Pembayaran dibatalkan oleh user.");
-        }
-      });
-    } catch (err) {
-      console.error("❌ Error saat proses pembayaran:", err);
-      alert("⚠️ Terjadi kesalahan. Silakan coba lagi.");
-    }
+// 🔥 Panggil Midtrans dan kirim order
+async function generateSnapToken({ model, amount, uid }) {
+  const orderId = `order-${Date.now()}`;
+  const response = await fetch("https://midtranspay.androidbutut.workers.dev/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ orderId, gross_amount: amount, model, uid })
   });
-});
 
-document.addEventListener("DOMContentLoaded", () => {
-  setupSnapCheckout();
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "Gagal mendapatkan Snap Token");
+  return result.token;
+}
+
+function setupPayButtons() {
+  const buttons = document.querySelectorAll(".pay-button");
+
+  buttons.forEach(button => {
+    button.addEventListener("click", async () => {
+      const model = button.dataset.model;
+      const amount = parseInt(button.dataset.amount);
       const auth = getAuth();
       const user = auth.currentUser;
 
       if (!user) {
-        document.getElementById("login-modal")?.classList.remove("hidden");
+        alert("🚫 Silakan login terlebih dahulu sebelum melakukan pembelian.");
         return;
       }
 
-  const btn7500 = document.getElementById("pay-pro-7500");
-  const btn12500 = document.getElementById("pay-pro-12500");
-  const modelSelect = document.getElementById("model-select");
-  const payButtons = document.querySelectorAll(".pay-button");
+      try {
+        button.disabled = true;
+        button.textContent = "🔄 Membuka pembayaran...";
+        const snapToken = await generateSnapToken({ model, amount, uid: user.uid });
 
-  if (btn7500 && modelSelect && payButton) {
-    btn7500.addEventListener("click", () => {
-      unlockModel.value = "@cf/meta/llama-3.2-1b-instruct";
-      payButtons.click();
-    });
-  }
+        window.snap.pay(snapToken, {
+          onSuccess: (result) => {
+            alert("✅ Pembayaran berhasil!");
+            location.href = `/success.html?order_id=${result.order_id}`;
+          },
+          onPending: () => {
+            alert("⏳ Pembayaran sedang diproses.");
+          },
+          onError: () => {
+            alert("❌ Pembayaran gagal.");
+          },
+          onClose: () => {
+            button.disabled = false;
+            button.textContent = "Beli Sekarang";
+          }
+        });
 
-  if (btn12500 && modelSelect && payButton) {
-    btn12500.addEventListener("click", () => {
-      unlockModel.value = "@cf/mistralai/mistral-small-3.1-24b-instruct";
-      payButtons.click();
+      } catch (err) {
+        alert("❌ Error: " + err.message);
+        button.disabled = false;
+        button.textContent = "Beli Sekarang";
+      }
     });
-  }
+  });
+}
+
+// 🔥 Auto-hide tombol jika model sudah dibeli
+async function hidePurchasedButtons(uid) {
+  const res = await fetch(`https://firestore.googleapis.com/v1/projects/glitchlab-ai/databases/(default)/documents/transactions?mask.fieldPaths=model&mask.fieldPaths=uid`);
+  const { documents = [] } = await res.json();
+
+  const ownedModels = documents
+    .filter(doc => doc.fields?.uid?.stringValue === uid)
+    .map(doc => doc.fields.model.stringValue);
+
+  document.querySelectorAll(".pay-button").forEach(btn => {
+    if (ownedModels.includes(btn.dataset.model)) {
+      btn.classList.add("hidden");
+      const info = document.createElement("span");
+      info.className = "text-green-500 text-sm mt-2";
+      info.textContent = "✅ Sudah Dibeli";
+      btn.parentElement.appendChild(info);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupPayButtons();
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      hidePurchasedButtons(user.uid);
+    }
+  });
 });
