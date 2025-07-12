@@ -3,13 +3,14 @@ import { getFirestore, collection, query, where, getDocs } from "firebase/firest
 import { onAuthChange } from './authSetup.js';
 
 const db = getFirestore();
-  onAuthChange((user) => {
+
+onAuthChange((user) => {
   if (user) {
     console.log("✅ Logged in as:", user.email);
   } else {
     console.log("❌ User logged out");
   }
-  });
+});
 
 /**
  * Cek apakah user sudah membeli model tertentu
@@ -20,11 +21,8 @@ const db = getFirestore();
 export async function hasModelAccess(uid, modelId) {
   if (!uid || !modelId) return false;
   try {
-    const q = query(
-      collection(db, "transactions"),
-      where("uid", "==", uid),
-      where("model", "==", modelId)
-    );
+    const trxRef = collection(db, `users/${uid}/transactions`);
+    const q = query(trxRef, where("model", "==", modelId));
     const snap = await getDocs(q);
     return !snap.empty;
   } catch (e) {
