@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/";
+const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/snap";
 
 /**
  * Mengambil Snap Token dari backend untuk inisiasi pembayaran Midtrans.
@@ -26,7 +26,7 @@ const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/";
  * @returns {Promise<string>} Snap Token.
  * @throws {Error} Jika gagal mendapatkan Snap Token.
  */
-async function generateSnapToken({ model, amount, uid }) {
+async function generateSnapToken({ model, amount, uid, userEmail }) {
   const orderId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   try {
     const response = await fetch(MIDTRANS_WORKER_URL, {
@@ -34,7 +34,7 @@ async function generateSnapToken({ model, amount, uid }) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ orderId, gross_amount: amount, model, uid })
+      body: JSON.stringify({ orderId, gross_amount: amount, model, uid, userEmail })
     });
 
     const result = await response.json();
@@ -82,7 +82,7 @@ function setupPayButtons() {
       button.textContent = "Memproses..."; // Atau "Memuat..."
 
       try {
-        const snapToken = await generateSnapToken({ model, amount, uid: user.uid });
+        const snapToken = await generateSnapToken({ model, amount, uid: user.uid, userEmail });
 
         if (typeof window.snap === 'undefined' || !window.snap.pay) {
           throw new Error("Midtrans Snap.js belum dimuat atau tidak tersedia.");

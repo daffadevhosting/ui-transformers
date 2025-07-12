@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
-const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/";
+const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/snap";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
