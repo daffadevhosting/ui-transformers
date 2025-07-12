@@ -121,11 +121,11 @@ onAuthStateChanged(auth, async (user) => {
             const expiresAt = new Date();
             expiresAt.setDate(expiresAt.getDate() + 30);
 
-            const transactionRef = doc(db, "artifacts", appId, "users", uid, "transactions", orderId);
+            const transactionRef = doc(db, "artifacts", appId, "transactions", orderId, uid);
             await setDoc(transactionRef, {
                 orderId: orderId,
-                modelPurchased: purchasedModel,
-                amount: purchasedAmount,
+                modelPurchased: model,
+                amount: amount,
                 purchaseDate: serverTimestamp(),
                 userId: uid,
                 status: transactionDetails.transaction_status, // Status dari Midtrans: 'settlement' atau 'capture'
