@@ -1,10 +1,23 @@
 // accessControl.js
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
-import { onAuthChange } from './authSetup.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
-const db = getFirestore();
+// --- KONFIGURASI FIREBASE ---
+// Ganti dengan konfigurasi project Firebase Anda
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: "glitchlab-ai.firebaseapp.com",
+  projectId: "glitchlab-ai",
+  appId: "1:807047215761:web:416168acd2080ab80b1d30"
+};
 
-onAuthChange((user) => {
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged((user) => {
   if (user) {
     console.log("✅ Logged in as:", user.email);
   } else {
