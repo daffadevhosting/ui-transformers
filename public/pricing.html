@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
       body {
         font-family: 'Space Grotesk', sans-serif;
       }
@@ -21,80 +22,92 @@
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-i2KW02MfN9duiyJ9"></script>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start text-gray-200 px-6 py-10">
-<div class="flex items-center w-full overflow-x-hidden px-6 justify-between space-x-4">
-  <a href="/">
-      <h1 class="text-2xl md:text-4xl font-extrabold text-white text-left leading-tight">
-        <i class="fa-solid fa-code text-blue-400"></i> UI Transformer
+
+<div class="flex items-center w-full max-w-6xl px-4 md:px-6 justify-between space-x-4 mb-8">
+  <a href="/" class="flex items-center space-x-2">
+      <i class="fa-solid fa-code text-blue-400 text-3xl md:text-5xl"></i>
+      <h1 class="text-2xl md:text-4xl font-extrabold text-white leading-tight">
+        UI Transformer
       </h1>
   </a>
-  <div id="user-info" class="hidden text-sm text-gray-700"></div>
+  <div id="user-info" class="hidden text-sm text-gray-400"></div>
 
-  <!-- <button id="login-btn" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">
-    Login
-  </button> -->
-
-  <button id="logout-btn" class="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 text-sm py-2 rounded hidden">
+  <button id="logout-btn" class="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 text-sm py-2 rounded hidden transition duration-300 ease-in-out">
     Logout
   </button>
 </div>
 
-  <div class="max-w-4xl mx-auto py-6 px-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">💳 Paket Pilihan</h1>
+<div class="max-w-6xl mx-auto py-6 px-4">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-white leading-tight">
+      Pilih Paket yang Sesuai untuk Kebutuhan Anda <span class="text-blue-400">⚡</span>
+    </h1>
+    <p class="text-lg text-center text-gray-400 mb-12">
+      Dapatkan akses ke model AI canggih untuk mengubah ide Anda menjadi antarmuka yang menakjubkan.
+    </p>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Free Plan -->
-      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center">
-        <h2 class="text-xl font-bold mb-2">Gratis</h2>
-        <p class="text-gray-500 mb-4">Coba 2x generate model Qwen tanpa login</p>
-        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 0</span>
-        <ul class="text-sm text-gray-600 space-y-2 mb-6">
-          <li>✅ Akses model Qwen</li>
-          <li>🔒 Tidak bisa simpan</li>
-          <li>🚫 Tanpa support</li>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white glassmorph rounded-2xl shadow-lg p-8 flex flex-col items-center border border-gray-700 hover:shadow-blue-500/30 transition-all duration-300 ease-in-out">
+        <h2 class="text-2xl font-bold mb-3 text-white">Gratis</h2>
+        <p class="text-gray-400 text-center mb-5">Coba 2x generate model Qwen tanpa perlu login.</p>
+        <div class="flex items-baseline mb-6">
+            <span class="text-5xl font-extrabold text-blue-500">Rp 0</span>
+            <span class="text-xl font-medium text-gray-500 ml-2">/ selamanya</span>
+        </div>
+        <ul class="text-base text-gray-300 space-y-3 mb-8 w-full text-left">
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Akses model Qwen</li>
+          <li class="flex items-center"><i class="fa-solid fa-ban text-red-400 mr-2"></i> Tidak bisa menyimpan proyek</li>
+          <li class="flex items-center"><i class="fa-solid fa-times-circle text-red-400 mr-2"></i> Tanpa dukungan prioritas</li>
         </ul>
-        <span class="text-green-500 text-shadow-green-400 rounded cursor-default" disabled>Aktif</span>
+        <span class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg cursor-default opacity-90">Aktif Saat Ini</span>
       </div>
 
-      <!-- Pro Plan -->
-      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center border-2 border-blue-600">
-        <h2 class="text-xl font-bold mb-2">Pro 25x</h2>
-        <p class="text-gray-500 mb-4">Akses 25x generate model besar</p>
-        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 7.500</span>
-        <ul class="text-sm text-gray-600 space-y-2 mb-6">
-          <li>✅ Qwen 5B, LLaMA 1B</li>
-          <li>✅ mistral 24B instruct</li>
-          <li>📆 Berlaku 30 hari</li>
+      <div class="bg-white glassmorph rounded-2xl shadow-lg p-8 flex flex-col items-center border-2 border-blue-500 transform scale-105 relative z-10">
+        <div class="absolute -top-3 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">Paling Populer</div>
+        <h2 class="text-2xl font-bold mb-3 text-white">Pro 25x</h2>
+        <p class="text-gray-400 text-center mb-5">Akses 25x generate dengan model-model premium pilihan.</p>
+        <div class="flex items-baseline mb-6">
+            <span class="text-5xl font-extrabold text-blue-500">Rp 7.500</span>
+            <span class="text-xl font-medium text-gray-500 ml-2">/ 30 hari</span>
+        </div>
+        <ul class="text-base text-gray-300 space-y-3 mb-8 w-full text-left">
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Qwen 5B, LLaMA 1B</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Mistral 24B Instruct</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Dukungan standar</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Berlaku 30 hari</li>
         </ul>
-<button 
-  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded pay-button"
-  data-model="@cf/mistralai/mistral-small-3.1-24b-instruct"
-  data-amount="7500">
-  Beli Sekarang
-</button>
+        <button
+          class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg pay-button transition duration-300 ease-in-out transform hover:scale-105"
+          data-model="@cf/mistralai/mistral-small-3.1-24b-instruct"
+          data-amount="7500">
+          Beli Sekarang
+        </button>
       </div>
 
-      <!-- Super Plan -->
-      <div class="bg-white glassmorph rounded-xl shadow-md p-6 flex flex-col items-center">
-        <h2 class="text-xl font-bold mb-2">Pro 50x</h2>
-        <p class="text-gray-500 mb-4">Akses 50x generate semua model</p>
-        <span class="text-3xl font-bold text-blue-600 mb-4">Rp 12.500</span>
-        <ul class="text-sm text-gray-600 space-y-2 mb-6">
-          <li>✅ Semua model premium</li>
-          <li>✅ deepseek r1 distill</li>
-          <li>🔥 Cocok buat power-user</li>
-          <li>📆 Berlaku 30 hari</li>
+      <div class="bg-white glassmorph rounded-2xl shadow-lg p-8 flex flex-col items-center border border-gray-700 hover:shadow-blue-500/30 transition-all duration-300 ease-in-out">
+        <h2 class="text-2xl font-bold mb-3 text-white">Pro 50x</h2>
+        <p class="text-gray-400 text-center mb-5">Akses 50x generate ke semua model premium tanpa batas!</p>
+        <div class="flex items-baseline mb-6">
+            <span class="text-5xl font-extrabold text-blue-500">Rp 12.500</span>
+            <span class="text-xl font-medium text-gray-500 ml-2">/ 30 hari</span>
+        </div>
+        <ul class="text-base text-gray-300 space-y-3 mb-8 w-full text-left">
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Semua model premium</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Deepseek R1 Distill</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Dukungan prioritas</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Cocok untuk power-user</li>
+          <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Berlaku 30 hari</li>
         </ul>
-<button 
-  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded pay-button"
-  data-model="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
-  data-amount="12500">
-  Beli Sekarang
-</button>
+        <button
+          class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg pay-button transition duration-300 ease-in-out transform hover:scale-105"
+          data-model="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+          data-amount="12500">
+          Beli Sekarang
+        </button>
       </div>
     </div>
 
-    <p class="mt-12 text-sm text-center text-gray-500">Pembayaran diproses melalui Midtrans. Aman & cepat.</p>
-  </div>
+    <p class="mt-16 text-md text-center text-gray-500">Pembayaran diproses secara aman dan cepat melalui <span class="font-semibold text-white">Midtrans</span>.</p>
+</div>
 
   <script type="module" src="/src/pricingPages.js"></script>
 
