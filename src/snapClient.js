@@ -38,7 +38,7 @@ export function setupSnapCheckout() {
         onSuccess: function (result) {
           unlockModel(model);
           alert("✅ Pembayaran berhasil!");
-          window.location.href = "/success.html?order_id=" + result.order_id;
+          window.location.href = "/success?order_id=" + result.order_id;
         },
         onPending: function () {
           alert("⏳ Pembayaran menunggu konfirmasi.");
