@@ -26,7 +26,7 @@ const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/snap";
  * @returns {Promise<string>} Snap Token.
  * @throws {Error} Jika gagal mendapatkan Snap Token.
  */
-async function generateSnapToken({ model, amount, uid, userEmail }) {
+async function generateSnapToken({ model, gross_amount: amount, uid, userEmail }) {
   const orderId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   try {
     const response = await fetch(MIDTRANS_WORKER_URL, {
@@ -67,10 +67,14 @@ function setupPayButtons() {
     const originalButtonText = button.textContent; // Simpan teks asli tombol
 
     button.addEventListener("click", async () => {
+
       const model = button.dataset.model;
-      const amount = parseInt(button.dataset.amount);
+      const gross_amount = parseInt(button.dataset.amount);
       const auth = getAuth();
       const user = auth.currentUser;
+      const orderId = `order-${Date.now()}`;
+      const uid = user
+      const userEmail = email
 
       if (!user) {
         alert("Anda harus login terlebih dahulu untuk melakukan pembelian. Silakan daftar atau masuk untuk melanjutkan.");
@@ -82,7 +86,7 @@ function setupPayButtons() {
       button.textContent = "Memproses..."; // Atau "Memuat..."
 
       try {
-        const snapToken = await generateSnapToken({ model, amount, uid: user.uid, userEmail });
+        const snapToken = await generateSnapToken({ orderId, gross_amount, model, uid, userEmail });
 
         if (typeof window.snap === 'undefined' || !window.snap.pay) {
           throw new Error("Midtrans Snap.js belum dimuat atau tidak tersedia.");
@@ -128,8 +132,9 @@ function setupPayButtons() {
  * @param {string} uid - User ID Firebase.
  */
 async function hidePurchasedButtons(uid) {
+    const orderId = `order-${Date.now()}`;
   try {
-    const res = await fetch(`https://firestore.googleapis.com/v1/projects/glitchlab-ai/databases/(default)/documents/transactions`);
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/glitchlab-ai/databases/(default)/documents/users/${uid}`);
 
     if (!res.ok) {
       throw new Error(`Gagal mengambil data transaksi: ${res.statusText}`);
