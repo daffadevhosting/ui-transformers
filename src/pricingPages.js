@@ -92,7 +92,7 @@ function setupPayButtons() {
           onSuccess: (result) => {
             alert("Pembayaran berhasil! Terima kasih atas pembelian Anda.");
             // Arahkan ke halaman sukses dengan order_id
-            location.href = `/success.html?order_id=${result.order_id || 'N/A'}`;
+            location.href = `/success?order_id=${result.order_id || 'N/A'}`;
           },
           onPending: () => {
             alert("Pembayaran Anda sedang dalam proses. Silakan selesaikan pembayaran sesuai instruksi.");
