@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupModelPricingUI();
   setupLoginUI();
   setupLoginModal();
-  updatePricingUI();
 
   const promptBox = document.getElementById("output");
   const initialText = `<!doctype html>
