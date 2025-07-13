@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     <body class="bg-gray-50 flex flex-col justify-center items-center min-h-screen text-center p-6">
       <h1 class="text-3xl font-bold text-clifford mb-2">👋 Selamat datang!</h1>
       <p class="text-gray-600 max-w-md">Tulis perintah desain atau masukkan URL website, dan aku akan bantu generate ulang tampilannya dengan Tailwind CSS ✨</p>
-      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra sedang dalam perbaikan dulu, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
+      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra sedang dalam perbaikan dulu, Lyra masih dalam fase latihan dan belajar, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
     </body>
 </html>`;
 
