@@ -1,34 +1,41 @@
 // snapClient.js
-import { getAuth } from "firebase/auth";
+import { getAuthInstance } from "./authSetup.js";
+
 import { MODEL_PRICING, unlockModel } from './premiumAccess.js';
+
 
 export function setupSnapCheckout() {
   const payButton = document.getElementById("pay-now");
   const modelSelect = document.getElementById("model-select");
 
+  if (!payButton || !modelSelect) {
+    console.warn("Elemen 'pay-now' atau 'model-select' tidak ditemukan. Fungsi setupSnapCheckout mungkin tidak berfungsi.");
+    return;
+  }
+
   payButton.addEventListener("click", async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const auth = getAuthInstance(); 
+    const user = auth.currentUser; // currentUser adalah properti dari objek auth compat
 
     if (!user) {
       document.getElementById("login-modal")?.classList.remove("hidden");
       return;
     }
     
-    const uid = user.uid; // user.uid dijamin ada jika user tidak null
-    const userEmail = user.email; // <-- AMBIL EMAIL DARI OBJEK USER
+    const uid = user.uid;
+    const userEmail = user.email;
     const model = modelSelect.value;
     const amount = MODEL_PRICING[model] || 0;
     const orderId = `order-${Date.now()}`;
 
     // Validasi dasar di frontend sebelum mengirim ke worker
     if (!userEmail) {
-        alert("⚠️ Email pengguna tidak ditemukan. Harap login kembali.");
+        globalAlert("⚠️ Email pengguna tidak ditemukan. Harap login kembali.", "error");
         console.error("User email is missing for checkout process.");
         return;
     }
     if (!model || amount <= 0) {
-        alert("⚠️ Model atau jumlah pembayaran tidak valid.");
+        globalAlert("⚠️ Model atau jumlah pembayaran tidak valid.", "error");
         console.error("Invalid model or amount selected for checkout.");
         return;
     }
@@ -45,27 +52,35 @@ export function setupSnapCheckout() {
 
       if (!res.ok) { // Cek status res.ok untuk error dari worker (misal status 400/500)
         console.error("Error from Midtrans Worker:", data.error || data);
-        alert(`❌ Gagal memproses permintaan: ${data.error || "Pesan error tidak diketahui."}`);
+        globalAlert(`❌ Gagal memproses permintaan: ${data.error || "Pesan error tidak diketahui."}`);
         return;
       }
 
       if (!data.token) {
-        alert("❌ Gagal mendapatkan Snap token dari Midtrans.");
+        globalAlert("❌ Gagal mendapatkan Snap token dari Midtrans.", "error");
+        return;
+      }
+
+      if (typeof window.snap === 'undefined') {
+        globalAlert("⚠️ Midtrans Snap.js belum dimuat. Silakan cek koneksi internet atau konfigurasi.", "error");
+        console.error("Midtrans Snap.js is not loaded.");
         return;
       }
 
       window.snap.pay(data.token, {
         onSuccess: function (result) {
-          unlockModel(model);
-          alert("✅ Pembayaran berhasil!");
+          // Asumsi unlockModel tidak bergantung pada Firebase modular
+          unlockModel(model); 
+          globalAlert("✅ Pembayaran berhasil!", "success");
+          // Redirect ke halaman sukses dengan order_id
           window.location.href = "/success?order_id=" + result.order_id;
         },
         onPending: function () {
-          alert("⏳ Pembayaran menunggu konfirmasi.");
+          globalAlert("⏳ Pembayaran menunggu konfirmasi.", "warning");
         },
-        onError: function (result) { // Midtrans onError juga memberikan objek result
+        onError: function (result) {
           console.error("❌ Pembayaran gagal (Midtrans):", result);
-          alert("❌ Pembayaran gagal. " + (result.status_message || "Silakan coba lagi."));
+          globalAlert("❌ Pembayaran gagal. " + (result.status_message || "Silakan coba lagi."), "error");
         },
         onClose: function () {
           console.log("🛑 Pembayaran dibatalkan oleh user.");
@@ -73,7 +88,7 @@ export function setupSnapCheckout() {
       });
     } catch (err) {
       console.error("❌ Error saat proses pembayaran:", err);
-      alert("⚠️ Terjadi kesalahan. Silakan coba lagi.");
+      globalAlert("⚠️ Terjadi kesalahan. Silakan coba lagi.", "error");
     }
   });
 }

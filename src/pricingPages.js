@@ -1,20 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore"; // Import getDoc
-
-// --- KONFIGURASI & INISIALISASI (Tidak berubah) ---
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "glitchlab-ai.firebaseapp.com",
-  projectId: "glitchlab-ai",
-  storageBucket: "glitchlab-ai.appspot.com",
-  messagingSenderId: "807047215761",
-  appId: "1:807047215761:web:416168acd2080ab80b1d30"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/snap";
 
@@ -59,7 +42,7 @@ function setupPayButtons() {
       const user = auth.currentUser;
 
       if (!user) {
-        alert("Anda harus login terlebih dahulu untuk melakukan pembelian.");
+        globalAlert("Anda harus login terlebih dahulu untuk melakukan pembelian.", "warning");
         return;
       }
 
@@ -89,24 +72,24 @@ function setupPayButtons() {
             location.href = `/success.html?order_id=${result.order_id}`;
           },
           onPending: (result) => {
-            alert("Pembayaran Anda sedang dalam proses.");
+            globalAlert("Pembayaran Anda sedang dalam proses.", "warning");
             button.disabled = false;
             button.textContent = originalButtonText;
           },
           onError: (error) => {
-            alert(`Pembayaran gagal: ${error?.message || 'Terjadi kesalahan.'}`);
+            globalAlert(`Pembayaran gagal: ${error?.message || 'Terjadi kesalahan.'}`);
             button.disabled = false;
             button.textContent = originalButtonText;
           },
           onClose: () => {
-            alert("Pembayaran dibatalkan.");
+            globalAlert("Pembayaran dibatalkan.", "error");
             button.disabled = false;
             button.textContent = originalButtonText;
           }
         });
 
       } catch (err) {
-        alert(`Terjadi kesalahan: ${err.message}`);
+        globalAlert(`Terjadi kesalahan: ${err.message}`);
         button.disabled = false;
         button.textContent = originalButtonText;
       }
@@ -121,19 +104,19 @@ function setupPayButtons() {
  */
 async function hidePurchasedButtons(uid) {
   try {
-    const userDocRef = doc(db, "users", uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const db = window.getFirestore(); // pakai global dari firebase init
+    const userDocRef = db.collection("users").doc(uid); // ✅ pakai compat-style
+    const userDocSnap = await userDocRef.get();
 
-    if (userDocSnap.exists()) {
+    if (userDocSnap.exists) {
       const userData = userDocSnap.data();
-      const ownedModel = userData.model; // Mengambil model yang dimiliki dari profil user
+      const ownedModel = userData.model;
 
       if (ownedModel) {
         document.querySelectorAll(".pay-button").forEach(btn => {
           if (btn.dataset.model === ownedModel) {
-            btn.classList.add("hidden"); // Sembunyikan tombol jika modelnya sama
-            
-            // Tambahkan label "Sudah Dibeli"
+            btn.classList.add("hidden");
+
             let infoSpan = btn.parentElement.querySelector(".purchase-status");
             if (!infoSpan) {
               infoSpan = document.createElement("span");
@@ -152,9 +135,10 @@ async function hidePurchasedButtons(uid) {
 
 // --- INISIALISASI & AUTH STATE (Tidak banyak berubah) ---
 document.addEventListener("DOMContentLoaded", () => {
+  const auth = window.getAuth(); // Pastikan ambil dari global
   setupPayButtons();
   
-  onAuthStateChanged(auth, (user) => {
+  auth.onAuthStateChanged((user) => {
     const logoutBtn = document.getElementById("logout-btn");
     const userInfo = document.getElementById("user-info");
 
@@ -162,12 +146,11 @@ document.addEventListener("DOMContentLoaded", () => {
       userInfo.textContent = `Login sebagai: ${user.email}`;
       userInfo.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
-      hidePurchasedButtons(user.uid); // Panggil fungsi yang sudah diperbaiki
+      hidePurchasedButtons(user.uid);
     } else {
       userInfo.classList.add("hidden");
       logoutBtn.classList.add("hidden");
 
-      // Reset tampilan tombol jika user logout
       document.querySelectorAll(".pay-button.hidden").forEach(btn => {
         btn.classList.remove("hidden");
         const infoSpan = btn.parentElement.querySelector(".purchase-status");
@@ -176,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Event listener untuk logout
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {

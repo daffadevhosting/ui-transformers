@@ -1,0 +1,71 @@
+
+<div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+  <div
+    id="preview-content"
+    class="w-full h-full opacity-0 translate-y-0 transition-all duration-700 ease-out"
+  >
+    <button id="close-preview"
+      class="absolute cursor-pointer top-5 right-5 z-50 text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg shadow-lg">
+    <i class="fa-solid fa-circle-xmark"></i>
+    </button>
+    <iframe
+      id="preview-frame"
+      class="w-full h-full border-none rounded-md shadow-2xl"
+      sandbox="allow-scripts"
+    ></iframe>
+  </div>
+</div>
+
+<div id="pricing-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden transition-opacity duration-500 ease-out">
+  <div class="glassmorph rounded-2xl shadow-2xl p-8 max-w-md w-full text-center animate-fadeInUp">
+    <h2 class="text-3xl font-bold text-gray-400 mb-4">🚫 Akses Terbatas</h2>
+    <p class="text-gray-300 mb-6">
+      Model ini adalah fitur <strong class="text-blue-600">PRO</strong>.<br />
+      Upgrade akunmu sekarang dan biarkan kreativitasmu mengalir tanpa batas.
+    </p>
+    <div class="flex justify-center gap-4">
+      <a href="/pricing" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Paket</a>
+      <button onclick="document.getElementById('pricing-modal').classList.add('hidden')" class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Nanti Dulu</button>
+    </div>
+  </div>
+</div>
+
+<div id="limit-modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden items-center justify-center">
+  <div class="glassmorph text-gray-300 p-6 rounded-xl max-w-sm w-full shadow-lg">
+    <h2 class="text-lg font-semibold text-red-600 mb-2">Batas Pemakaian Tercapai</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      Kamu sudah mencapai batas penggunaan untuk model ini.<br>
+      Silakan login atau upgrade paket untuk lanjut.
+    </p>
+    <div class="flex justify-end space-x-2">
+      <button id="close-limit-modal" class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
+        Nanti Saja
+      </button>
+      <a href="/pricing" class="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700">
+        Upgrade Sekarang
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="login-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center transition-opacity duration-300">
+  <div class="glassmorph rounded-xl shadow-2xl p-6 w-full max-w-md animate-scale-in text-center text-gray-300 relative">
+    <div class="absolute -top-5 left-1/2 transform -translate-x-1/2">
+      <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs shadow-lg uppercase tracking-wide">
+        Premium Access
+      </div>
+    </div>
+    <h2 class="text-2xl font-bold mb-2 text-gray-800">🚀 Buka Pintu Keajaiban!</h2>
+    <p class="text-sm text-gray-600 mb-5">Login dulu, baru bisa ngintip fitur-fitur sakti dari Lyra ✨</p>
+    <button
+      id="google-login-btn"
+      class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full font-medium transition duration-300"
+    >
+      <i class="fa-brands fa-google mr-2"></i> Masuk dengan Google
+    </button>
+    <p class="mt-4 text-xs text-gray-500">Tenang... Gak ada yang dikirim ke grup WA keluarga 😌</p>
+    <button id="close-login-modal" class="mt-3 text-sm text-gray-500 hover:underline">
+      Nanti aja, aku takut sukses
+    </button>
+  </div>
+</div>

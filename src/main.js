@@ -1,11 +1,9 @@
 // main.js
 
 import { streamAndRenderAI } from './streamAndRender.js';
-import { safePrompt } from './utils/promptBuilder.js';
 import { setupModelPricingUI } from './modelHandler.js';
 import { setupLoginUI, setupLoginModal } from './loginUI.js';
 import { setupSnapCheckout } from './snapClient.js';
-import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
 import { getModelPrice } from './premiumAccess.js';
 import { updatePricingUI, hasModelAccess } from "./accessControl.js";
@@ -35,9 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   </head>
     <body class="bg-gray-50 flex flex-col justify-center items-center min-h-screen text-center p-6">
       <h1 class="text-3xl font-bold text-clifford mb-2">👋 Selamat datang!</h1>
-      <p class="text-gray-600 max-w-md">✨ Saat ini Lyra sedang dalam perbaikan dulu, Lyra masih dalam fase latihan dan belajar, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
+      <p class="text-gray-600 max-w-md">Tulis perintah desain atau masukkan URL website, dan aku akan bantu generate ulang tampilannya dengan Tailwind CSS ✨</p>
+      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra sedang dalam perbaikan dulu, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
     </body>
 </html>`;
+
 
   promptBox.textContent = ""; // kosongin dulu
   typeEffect(promptBox, initialText);
@@ -67,7 +67,7 @@ if (btn) {
     const uid = user?.uid;
 
     if (!uid) {
-      alert("🚫 Silakan login terlebih dahulu.");
+      globalAlert("🚫 Silakan login terlebih dahulu.", "error");
       return;
     }
 
@@ -88,7 +88,7 @@ if (btn) {
   const closeBtn = document.getElementById("close-preview");
   const iframe = document.getElementById("preview-frame");
   const output = document.getElementById("output");
-
+  const outputElement = document.getElementById("output-code");
 
   showBtn?.addEventListener("click", () => {
     const blob = new Blob([output.textContent], { type: "text/html" });
@@ -128,8 +128,8 @@ if (btn) {
 document.getElementById("copy-button").addEventListener("click", () => {
   const output = document.getElementById("output");
   navigator.clipboard.writeText(output.textContent)
-    .then(() => alert("✅ Kode berhasil disalin!"))
-    .catch(() => alert("❌ Gagal menyalin kode."));
+    .then(() => globalAlert("✅ Kode berhasil disalin!", "success"))
+    .catch(() => globalAlert("❌ Gagal menyalin kode.", "error"));
 });
 
 export async function fetchUITransform() {

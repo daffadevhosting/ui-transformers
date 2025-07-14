@@ -1,17 +1,10 @@
 // /src/success.js
 
-// Impor fungsi yang diperlukan dari Firebase SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
-
-// --- KONFIGURASI FIREBASE ---
-// Ganti dengan konfigurasi project Firebase Anda
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "glitchlab-ai.firebaseapp.com",
-  projectId: "glitchlab-ai",
-  appId: "1:807047215761:web:416168acd2080ab80b1d30"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  appId: FIREBASE_APP_ID
 };
 
 // Inisialisasi Firebase

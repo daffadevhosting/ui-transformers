@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: page.lang | default: 'id-ID' }}">
+
+  {% include head.html %}
+
+  <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex flex-col items-center justify-start">
+  {% include navHeader.html %}
+
+    <main class="main p-4 w-full max-w-6xl mx-auto" aria-label="Content">
+      {{ content }}
+    </main>
+  {% include permodalan.html %}
+  {% include footer.html %}
+<div id="global-alert-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[9999] space-y-2 w-full max-w-sm px-4">
+</div>
+<script>
+function globalAlert(message, type = "info", duration = 4000) {
+  const container = document.getElementById("global-alert-container");
+  if (!container) return;
+
+  const colors = {
+    success: "bg-green-600 text-white",
+    error: "bg-red-600 text-white",
+    warning: "bg-yellow-500 text-black",
+    info: "bg-blue-600 text-white"
+  };
+
+  const alert = document.createElement("div");
+  alert.className = `px-4 py-3 rounded-lg shadow-lg ${colors[type] || colors.info} animate-fadeIn`;
+  alert.innerHTML = `<div class="flex items-center justify-between gap-3">
+    <span class="text-sm">${message}</span>
+    <button class="text-white/80 hover:text-white text-xs" onclick="this.parentElement.parentElement.remove()">×</button>
+  </div>`;
+
+  container.appendChild(alert);
+
+  setTimeout(() => {
+    alert.classList.add("opacity-0");
+    setTimeout(() => alert.remove(), 300);
+  }, duration);
+}
+
+// Optional: fadeIn animation
+document.head.insertAdjacentHTML("beforeend", `
+  <style>
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+`);
+</script>
+  </body>
+
+</html>

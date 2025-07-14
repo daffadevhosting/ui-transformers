@@ -1,6 +1,5 @@
 // modelHandler.js
 import { hasModelAccess } from "./accessControl.js";
-import { getAuth } from "firebase/auth";
 
 export const MODEL_PRICING = {
   "@cf/qwen/qwen1.5-0.5b-chat": 0,

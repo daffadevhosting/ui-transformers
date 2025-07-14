@@ -1,0 +1,46 @@
+        <div class="glassmorph w-full rounded-xl md:w-[750px] max-w-3xl p-3 md:col-span-1 order-1 md:order-1">
+          <label for="output" class="block text-sm font-medium text-gray-500 mb-1">Output HTML + Tailwind</label>
+            <pre id="output"
+                class="hljs w-full min-h-[15rem] max-h-[50vh] p-2.5 border border-gray-300 rounded-xl font-mono text-sm overflow-y-auto scrollbar-hidden whitespace-pre-wrap resize-y bg-gray-900 text-green-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <code class="language-html text-green-300" id="output-code"></code>
+            </pre>
+
+          <div class="flex flex-wrap justify-between items-center gap-4 mt-4">
+            <div class="flex flex-wrap gap-2 items-center-safe">
+              <button
+                 id="copy-button"
+                class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm"
+              >
+                <i class="fa-solid fa-copy"></i> Salin
+              </button>
+              <button id="show-preview" class="cursor-pointer bg-gray-800 text-white px-5 py-2 rounded-xl hover:bg-black transition-all text-sm">
+                <i class="fa-solid fa-eye"></i> Pratinjau
+              </button>
+            </div>
+            <label class="inline-flex gap-3 items-center cursor-pointer">
+              <a href="/pricing" class="cursor-pointer px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                Upgrade
+              </a>
+            </label>
+          </div>
+            <script>
+            // Tunggu DOM siap
+            document.addEventListener("DOMContentLoaded", () => {
+                const outputElement = document.getElementById("output-code");
+
+                if (!outputElement) {
+                console.error("❌ Element #output-code tidak ditemukan.");
+                return;
+                }
+
+                // Fungsi reusable untuk render kode HTML dengan highlight
+                window.renderHighlightedHTMLCode = function(htmlString) {
+                outputElement.textContent = htmlString;
+                hljs.highlightElement(outputElement);
+                };
+
+                // Contoh penggunaan langsung:
+                // window.renderHighlightedHTMLCode('<!doctype html>\\n<html>\\n  <head>...</head>\\n</html>');
+            });
+            </script>
+        </div>

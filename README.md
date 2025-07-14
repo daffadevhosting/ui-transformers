@@ -22,9 +22,9 @@ Transformasi antarmuka berbasis AI, dari URL atau prompt, jadi halaman statis Ta
 
 ### 🧰 Stack Teknologi
 
-- **Frontend**: Vite + Vanilla JS + TailwindCSS
+- **Frontend**: Jekyll + Vanilla JS + TailwindCSS
 - **Backend**: Cloudflare Workers (Serverless)
-- **AI Provider**: Cloudflare AI Gateway (LLaMA, Mistral, Qwen, dll)
+- **AI Provider**: Cloudflare AI Gateway (Qwen, LLaMA, Mistral, deepseek)
 - **Auth**: Firebase Auth (Google OAuth)
 - **Database**: Firestore (untuk user dan status premium)
 - **Payment**: Midtrans Snap
@@ -41,8 +41,8 @@ Transformasi antarmuka berbasis AI, dari URL atau prompt, jadi halaman statis Ta
 
 2. **Pasang dependensi frontend**
    ```bash
-   npm install
-   npm run dev
+   bundle install
+   bundle exec jekyll s
    ```
 
 3. **Jalankan Cloudflare Worker lokal**
@@ -52,8 +52,11 @@ Transformasi antarmuka berbasis AI, dari URL atau prompt, jadi halaman statis Ta
 
 4. **Setting `.env` frontend**
    ```env
-   VITE_FIREBASE_API_KEY=your_firebase_key
-   VITE_CLOUDFLARE_API_KEY=your_cf_ai_api_key
+FIREBASE_API_KEY=******************-xgFk
+FIREBASE_AUTH_DOMAIN=************.firebaseapp.com
+FIREBASE_PROJECT_ID=projectlo
+FIREBASE_APP_ID=1:**********:web:************
+MIDTRANS_URL=https://midtrans.workers.dev/snap
    ```
 
 ---
@@ -98,7 +101,7 @@ Ambil desain dari https://github.com lalu ubah jadi responsive layout Tailwind.
 ---
 
 ### 📄 Lisensi
-MIT License © 2025 GlitchLabs
+MIT License © 2025 GlitchLab
 
 ---
 

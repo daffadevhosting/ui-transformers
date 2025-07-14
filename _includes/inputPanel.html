@@ -1,0 +1,39 @@
+        <div class="md:col-span-1 w-full md:w-[500px] max-w-lg order-2 md:order-2 mt-6 md:mt-0">
+          <div class="glassmorph p-3 rounded-xl relative">
+
+          <div class="flex flex-wrap justify-between items-center-safe mb-2">
+            <p id="model-price" class="text-sm text-gray-500">Harga: Gratis</p>
+            <button id="pay-now" class="tombol-bayar cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-md hidden text-sm">
+              🔒 Bayar untuk Akses
+            </button>
+          </div>
+
+            <textarea
+              id="multi-input"
+              class="w-full p-4 pr-12 border border-gray-300 rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 text-base"
+              placeholder="🔗 Masukkan URL website atau tulis instruksi desain..."
+              rows="4"
+            ></textarea>
+
+            <div class="absolute bottom-6 left-4 w-1/2">
+              <select id="model-select" class="w-full glassmorph cursor-pointer px-2 py-1 text-gray-300 border border-gray-400 rounded-md text-sm bg-white">
+                <option value="@cf/qwen/qwen1.5-0.5b-chat" selected>⚡ Qwen 0.5B (Gratis)</option>
+                <option value="@cf/meta/llama-3.2-1b-instruct">🐣 LLaMA 3.2-1B (Gratis 2x/hari)</option>
+                <option value="@cf/mistralai/mistral-small-3.1-24b-instruct">🧠 Mistral 24B (Rp 7.500)</option>
+                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧨 DeepSeek 32B (Rp 12.000)</option>
+              </select>
+            </div>
+
+            <button
+              id="transform-button"
+              class="cursor-pointer absolute bottom-6 right-4 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3"
+              title="Generate UI dari input"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+          </div>
+
+          <div id="loading" class="hidden text-sm text-blue-400 animate-pulse text-center mt-4">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Sedang memproses dengan AI...
+          </div>
+        </div>

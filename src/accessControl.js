@@ -1,23 +1,33 @@
 // accessControl.js
-import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { onAuthChange } from './authSetup.js'; // Pastikan path ini benar
+// Tidak perlu import apa pun karena sudah di-load via <script> di HTML
+// Gunakan namespace global firebase.firestore
 
-// [PENJELASAN] Inisialisasi Firestore
-const db = getFirestore();
+export async function updatePricingUI(uid) {
+  if (!uid) return;
 
-// [PENJELASAN] Listener ini bisa tetap ada untuk debugging saat login/logout
-onAuthChange((user) => {
-  if (user) {
-    console.log("AccessControl: User terautentikasi.", user.uid);
-    updatePricingUI(user.uid); // Panggil update UI saat status auth berubah
-  } else {
-    console.log("AccessControl: User logout.");
-    // Reset UI ke keadaan default saat logout
-    document.querySelectorAll(".tombol-bayar.hidden").forEach(btn => {
-        btn.classList.remove("hidden");
-    });
+  try {
+    const userDocRef = firebase.firestore().doc(`users/${uid}`);
+    const userDocSnap = await userDocRef.get();
+
+    if (userDocSnap.exists) {
+      const userData = userDocSnap.data();
+      const ownedModel = userData.model;
+      const expiresAt = userData.expiresAt;
+
+      const isSubscriptionActive = ownedModel && expiresAt && expiresAt.toDate() > new Date();
+
+      if (isSubscriptionActive) {
+        document.querySelectorAll(".tombol-bayar").forEach(btn => {
+          if (btn.dataset.model === ownedModel) {
+            btn.classList.add("hidden");
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Gagal memperbarui UI harga:", e);
   }
-});
+}
 
 /**
  * [PERBAIKAN TOTAL] Fungsi ini sekarang memeriksa langsung dokumen profil user,
@@ -32,87 +42,40 @@ export async function hasModelAccess(uid, modelToCheck = null) {
   if (!uid) return false;
 
   try {
-    const userDocRef = doc(db, "users", uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const db = window.getFirestore(); // pakai dari global
+    const userDocRef = firebase.firestore().doc(`users/${uid}`);
+    const userDocSnap = await userDocRef.get();
 
-    if (!userDocSnap.exists()) {
+    if (!userDocSnap.exists) {
       console.log("Akses ditolak: Dokumen user tidak ditemukan.");
       return false;
     }
 
     const userData = userDocSnap.data();
     const activeModel = userData.model;
-    const expiresAt = userData.expiresAt; // Ambil data tanggal kedaluwarsa
+    const expiresAt = userData.expiresAt;
 
-    // 1. Cek apakah user punya model aktif
-    if (!activeModel) {
-      console.log("Akses ditolak: Tidak ada model aktif.");
+    if (!activeModel || !expiresAt || !(expiresAt.toDate instanceof Function)) {
+      console.log("Akses ditolak: Model atau tanggal kedaluwarsa tidak valid.");
       return false;
-    }
-
-    // 2. Cek apakah tanggal langganan sudah lewat (kedaluwarsa)
-    if (!expiresAt || !(expiresAt.toDate instanceof Function)) {
-        console.log("Akses ditolak: Data tanggal kedaluwarsa tidak valid.");
-        return false;
     }
 
     const expiryDate = expiresAt.toDate();
-    const now = new Date();
-
-    if (expiryDate < now) {
-      console.log(`Akses ditolak: Langganan untuk model '${activeModel}' telah kedaluwarsa pada ${expiryDate.toLocaleString()}`);
+    if (expiryDate < new Date()) {
+      console.log(`Akses ditolak: Langganan kedaluwarsa ${expiryDate.toLocaleString()}`);
       return false;
     }
 
-    // 3. Jika parameter modelToCheck diberikan, pastikan modelnya cocok
     if (modelToCheck && activeModel !== modelToCheck) {
-      console.log(`Akses ditolak: User punya model '${activeModel}', tapi yang dibutuhkan '${modelToCheck}'.`);
+      console.log(`Akses ditolak: Butuh '${modelToCheck}', tapi user punya '${activeModel}'`);
       return false;
     }
 
-    // Jika semua pengecekan lolos
-    console.log(`✅ Akses diberikan: User punya model '${activeModel}', berlaku hingga ${expiryDate.toLocaleString()}`);
+    console.log(`✅ Akses OK: Model '${activeModel}', berlaku sampai ${expiryDate.toLocaleString()}`);
     return true;
 
   } catch (e) {
     console.error("🔥 Gagal saat memeriksa akses model:", e);
     return false;
-  }
-}
-
-
-/**
- * [PERBAIKAN] Fungsi ini dioptimalkan untuk membaca data user SEKALI saja,
- * lalu memperbarui semua tombol berdasarkan data tersebut.
- *
- * @param {string} uid - UID pengguna.
- */
-export async function updatePricingUI(uid) {
-  if (!uid) return;
-
-  try {
-    const userDocRef = doc(db, "users", uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      const ownedModel = userData.model;
-      const expiresAt = userData.expiresAt;
-
-      // Cek apakah langganan valid dan belum kedaluwarsa
-      const isSubscriptionActive = ownedModel && expiresAt && expiresAt.toDate() > new Date();
-
-      if (isSubscriptionActive) {
-        document.querySelectorAll(".tombol-bayar").forEach(btn => {
-          // Tombol disembunyikan jika model yang dijual sama dengan yang sudah dimiliki user
-          if (btn.dataset.model === ownedModel) {
-            btn.classList.add("hidden");
-            // Anda bisa tambahkan label "Sudah Aktif" di sini jika mau
-          }
-        });
-      }
-    }
-  } catch (e) {
-    console.error("Gagal memperbarui UI harga:", e);
   }
 }

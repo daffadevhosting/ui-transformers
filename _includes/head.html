@@ -1,0 +1,52 @@
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+  <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+
+  {% feed_meta %}
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!--<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">-->
+  <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
+<!-- Highlight.js Theme: GitHub Dark -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- Highlight.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+    <style>
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .scrollbar-hidden {
+        scrollbar-width: none;      /* Firefox */
+        -ms-overflow-style: none;   /* IE 10+ */
+      }
+
+      .scrollbar-hidden::-webkit-scrollbar {
+        display: none;              /* Chrome, Safari */
+      }
+      .glassmorph {
+        background: rgba(17, 25, 40, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      #preview-modal {
+        backdrop-filter: blur(4px);
+      }
+      #preview-frame {
+        background-color: white;
+      }
+      #preview-modal.show #preview-content {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  {% include config.html %}
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-i2KW02MfN9duiyJ9"></script>
+</head>
