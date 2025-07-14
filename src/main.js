@@ -8,7 +8,7 @@ import { setupSnapCheckout } from './snapClient.js';
 import { getAuth } from "firebase/auth";
 import { signInWithGoogle, logout, onAuthChange } from './authSetup.js';
 import { getModelPrice } from './premiumAccess.js';
-import { updatePricingUI } from "./accessControl.js";
+import { updatePricingUI, hasModelAccess } from "./accessControl.js";
 
 let token = "";
 
@@ -59,10 +59,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 document.getElementById("login-btn").addEventListener("click", signInWithGoogle);
 document.getElementById("logout-btn").addEventListener("click", logout);
-  const btn = document.getElementById("transform-button");
-  if (btn) {
-    btn.addEventListener("click", fetchUITransform);
-  }
+
+const btn = document.getElementById("transform-button");
+if (btn) {
+  btn.addEventListener("click", async () => {
+    const user = getAuth().currentUser;
+    const uid = user?.uid;
+
+    if (!uid) {
+      alert("🚫 Silakan login terlebih dahulu.");
+      return;
+    }
+
+    const access = await hasModelAccess(uid);
+    if (!access) {
+      console.log("🔒 Akses ditolak, user belum beli paket.");
+      showPricingModal(); // tetap bisa dipanggil, meski modal gak muncul kalau udah punya
+      return;
+    }
+
+    // ✅ Akses disetujui, lanjut proses
+    fetchUITransform();
+  });
+}
 
   const showBtn = document.getElementById("show-preview");
   const modal = document.getElementById("preview-modal");
@@ -231,7 +250,20 @@ iframe.onload = () => {
   }
 }
 
-function showPricingModal() {
+async function showPricingModal() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    // Kalau belum login, tampilkan modal
+    document.getElementById('pricing-modal')?.classList.remove('hidden');
+    return;
+  }
+
+  const hasAccess = await hasModelAccess(user.uid);
+  if (hasAccess) {
+    console.log("✅ User sudah punya akses, modal tidak ditampilkan.");
+    return;
+  }
+
   document.getElementById('pricing-modal')?.classList.remove('hidden');
 }
 
