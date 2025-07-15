@@ -34,30 +34,30 @@ Transformasi antarmuka berbasis AI, dari URL atau prompt, jadi halaman statis Ta
 ### ⚙️ Cara Instalasi (Dev Mode)
 
 1. **Clone repo ini**
-   ```bash
-   git clone https://github.com/daffadevhosting/ui-transformers.git
-   cd ui-transformers
-   ```
+```bash
+git clone https://github.com/daffadevhosting/ui-transformers.git
+cd ui-transformers
+```
 
 2. **Pasang dependensi frontend**
-   ```bash
-   bundle install
-   bundle exec jekyll s
-   ```
+```bash
+bundle install
+bundle exec jekyll s
+```
 
 3. **Jalankan Cloudflare Worker lokal**
-   ```bash
-   wrangler dev
-   ```
+```bash
+wrangler dev
+```
 
 4. **Setting `.env` frontend**
-   ```env
+```md
 FIREBASE_API_KEY=******************-xgFk
 FIREBASE_AUTH_DOMAIN=************.firebaseapp.com
 FIREBASE_PROJECT_ID=projectlo
 FIREBASE_APP_ID=1:**********:web:************
 MIDTRANS_URL=https://midtrans.workers.dev/snap
-   ```
+```
 
 ---
 
@@ -92,11 +92,12 @@ Ambil desain dari https://github.com lalu ubah jadi responsive layout Tailwind.
 
 ### 💳 Paket Premium
 
-| Paket             | Harga       | Limit |
-|------------------|-------------|-------|
-| Gratis (Anon)     | Rp 0        | 2x / bulan |
-| PRO 7.500         | Rp 7.500    | 25x |
-| PRO 12.000        | Rp 12.000   | 50x |
+| Paket        | Model                                          | Limit Generate | Estimasi Biaya Max | Harga Jual |
+| ------------ | ---------------------------------------------- | -------------- | ------------------ | ---------- |
+| **Gratis**   | `@cf/qwen/qwen1.5-1.8b-chat`                   | 2x             | Rp 0               | Rp 0       |
+| **Medium**   | `@cf/meta/llama-3.2-3b-instruct`               | 25x            | \~Rp 8.000         | Rp 29.000  |
+| **Advanced** | `@cf/mistral/mistral-7b-instruct-v0.2-lora`    | 35x            | \~Rp 18.000        | Rp 39.000  |
+| **Expert**   | `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b` | 50x            | \~Rp 23.000        | Rp 69.000  |
 
 ---
 
