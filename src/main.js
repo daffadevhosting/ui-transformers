@@ -169,7 +169,7 @@ const payload = {
 
 console.log("Data yang dikirim ke backend:", JSON.stringify(payload, null, 2));
 
-const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
+const res = await fetch("http://localhost:8787", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
