@@ -42,18 +42,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   promptBox.textContent = ""; // kosongin dulu
   typeEffect(promptBox, initialText);
 
+  // Get token from current user
   const auth = getAuth();
   const user = auth.currentUser;
   if (user) {
     token = await user.getIdToken();
-      await updatePricingUI(user.uid);
+    console.log("✅ Token obtained:", token ? "Yes" : "No");
+    await updatePricingUI(user.uid);
+  } else {
+    console.log("⚠️ No user logged in at startup");
   }
 
-  onAuthChange((user) => {
+  onAuthChange(async (user) => {
   if (user) {
     console.log("✅ Logged in as:", user.email);
+    token = await user.getIdToken();
+    console.log("✅ New token obtained");
   } else {
     console.log("❌ User logged out");
+    token = "";
   }
   });
 
@@ -63,22 +70,34 @@ document.getElementById("logout-btn").addEventListener("click", logout);
 const btn = document.getElementById("transform-button");
 if (btn) {
   btn.addEventListener("click", async () => {
-    const user = getAuth().currentUser;
+    console.log("🔵 Tombol generate diklik!");
+    
+    const auth = getAuth();
+    const user = auth.currentUser;
     const uid = user?.uid;
 
+    console.log("🔵 User saat ini:", user);
+    console.log("🔵 UID:", uid);
+
     if (!uid) {
+      console.log("🔴 User belum login!");
       globalAlert("🚫 Silakan login terlebih dahulu.", "error");
       return;
     }
 
+    console.log("🔵 Memeriksa akses model...");
     const access = await hasModelAccess(uid);
+    console.log("🔵 Hasil akses:", access);
+    
     if (!access) {
       console.log("🔒 Akses ditolak, user belum beli paket.");
-      showPricingModal(); // tetap bisa dipanggil, meski modal gak muncul kalau udah punya
+      globalAlert("🔒 Anda perlu membeli paket untuk menggunakan fitur ini.", "warning");
+      showPricingModal();
       return;
     }
 
     // ✅ Akses disetujui, lanjut proses
+    console.log("🟢 Akses OK, memulai generate...");
     fetchUITransform();
   });
 }
@@ -133,43 +152,54 @@ document.getElementById("copy-button").addEventListener("click", () => {
 });
 
 export async function fetchUITransform() {
+  console.log("🔵 fetchUITransform dipanggil!");
+  
   const output = document.getElementById("output");
+  const outputCode = document.getElementById("output-code");
   const iframe = document.getElementById("preview-frame");
   const loading = document.getElementById("loading");
   const model = document.getElementById("model-select").value;
   const input = document.getElementById("multi-input").value.trim();
+  const reasoningPanel = document.getElementById("reasoning-panel");
+  const reasoningContent = document.getElementById("reasoning-content");
 
+  console.log("🔵 Input:", input);
+  console.log("🔵 Model:", model);
+  console.log("🔵 Token:", token ? "Ada" : "Tidak ada");
+
+  // Clear previous output and reasoning
   output.textContent = "";
+  if (outputCode) outputCode.textContent = "";
   iframe.src = "";
+  if (reasoningContent) reasoningContent.textContent = "";
+  if (reasoningPanel) reasoningPanel.classList.add("hidden");
 
   if (!input || input.length < 5) {
-    output.textContent = "🚨 Masukkan URL atau instruksi yang cukup jelas.";
+    globalAlert("🚨 Masukkan URL atau instruksi yang cukup jelas.", "warning");
     return;
   }
 
-  if (!token && getModelPrice(model) > 0) {
-    showPricingModal();
-    return;
-  }
-
+  // Show loading state
   loading.classList.remove("hidden");
-
+  console.log("🔵 Loading indicator shown");
+  
+  // Update button to show loading
+  const btn = document.getElementById("transform-button");
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add("opacity-50", "cursor-not-allowed");
+  }
 
   try {
-const model = document.getElementById("model-select").value;
-const userInput = document.getElementById("multi-input").value.trim();
-const isURL = /^https?:\/\//i.test(userInput);
-const activeType = isURL ? "url" : "generate";
-
 const payload = {
-  input: userInput,
-  type: activeType,
+  input: input,
+  type: /^https?:\/\//i.test(input) ? "url" : "generate",
   model
 };
 
-console.log("Data yang dikirim ke backend:", JSON.stringify(payload, null, 2));
+console.log("🔵 Mengirim ke backend:", JSON.stringify(payload, null, 2));
 
-const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
+const res = await fetch("http://localhost:8787/", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -177,6 +207,8 @@ const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
   },
   body: JSON.stringify(payload)
 });
+
+console.log("🔵 Response status:", res.status);
 
 if (!res.ok) {
   let errMsg = `❌ Gagal: ${res.status}`;
@@ -215,15 +247,29 @@ fullHTML = fullHTML.trim();
 if (fullHTML.startsWith("```html")) fullHTML = fullHTML.slice(7);
 if (fullHTML.endsWith("```")) fullHTML = fullHTML.slice(0, -3);
 
-let displayedHTML = fullHTML;
-if (fullHTML.length < 1000) {
-  displayedHTML += "";
-}
-output.textContent = displayedHTML;
 let cleanHTML = fullHTML.trim();
 
+// Extract reasoning content (<think>...
+// or similar tags)
+const reasoningMatch = cleanHTML.match(/\<think\>([\s\S]*?)\<\/think\>/i);
+let reasoningText = "";
+
+if (reasoningMatch && reasoningMatch[1]) {
+  reasoningText = reasoningMatch[1].trim();
+  console.log("🧠 Reasoning found:", reasoningText.substring(0, 100) + "...");
+  
+  // Remove reasoning from HTML output
+  cleanHTML = cleanHTML.replace(/\<think\>[\s\S]*?\<\/think\>/gi, "");
+  
+  // Display reasoning in separate panel
+  if (reasoningContent && reasoningPanel) {
+    reasoningContent.textContent = reasoningText;
+    reasoningPanel.classList.remove("hidden");
+  }
+}
+
+// Also remove other common AI prefixes
 cleanHTML = cleanHTML
-  .replace(/^<think>[\s\S]*?<\/think>/i, "")
   .replace(/^✅.*?\n/i, "")
   .replace(/^```html/i, "")
   .replace(/```$/i, "")
@@ -235,18 +281,38 @@ if (doctypeIndex !== -1) {
   cleanHTML = cleanHTML.slice(doctypeIndex);
 }
 
+// Display clean HTML in output
+output.textContent = cleanHTML;
+if (outputCode) {
+  outputCode.textContent = cleanHTML;
+  if (window.hljs) {
+    hljs.highlightElement(outputCode);
+  }
+}
+
 iframe.src = "";
 const blob = new Blob([cleanHTML], { type: "text/html" });
 iframe.src = URL.createObjectURL(blob);
 
 iframe.onload = () => {
-  const previewDoc = iframe.contentDocument || iframe.contentWindow.document;
+  console.log("✅ Preview loaded successfully");
+  globalAlert("✅ Generate berhasil!", "success");
 };
 
   } catch (err) {
+    console.error("❌ Error:", err);
+    globalAlert(err.message || "⚠️ Terjadi kesalahan tidak diketahui.", "error");
     output.textContent = err.message || "⚠️ Terjadi kesalahan tidak diketahui.";
   } finally {
+    // Hide loading state
     loading.classList.add("hidden");
+    
+    // Re-enable button
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+    console.log("🔵 Loading complete");
   }
 }
 

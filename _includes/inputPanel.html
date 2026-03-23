@@ -1,4 +1,24 @@
-        <div class="md:col-span-1 w-full md:w-[500px] max-w-lg order-2 md:order-2 mt-6 md:mt-0">
+        <div class="input-style md:col-span-1 w-full md:w-[500px] max-w-lg order-2 md:order-2 mt-6 md:mt-0">
+          
+          <!-- Reasoning Panel -->
+          <div id="reasoning-panel" class="hidden mb-4">
+            <div class="glassmorph p-3 rounded-xl">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-semibold text-purple-300">
+                  <i class="fa-solid fa-brain mr-2"></i>AI Reasoning
+                </h3>
+                <button id="collapse-reasoning" class="text-gray-400 hover:text-white text-xs">
+                  <i class="fa-solid fa-chevron-up"></i>
+                </button>
+              </div>
+              <div id="reasoning-content" class="text-xs text-gray-300 max-h-40 overflow-y-auto whitespace-pre-wrap"></div>
+            </div>
+          </div>
+<div class="flex-column">
+          <div id="loading" class="hidden text-sm text-blue-400 animate-pulse text-center mb-4 mt-4">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Sedang memproses dengan AI...
+          </div>
+          
           <div class="glassmorph p-3 rounded-xl relative">
 
           <div class="flex flex-wrap justify-between items-center-safe mb-2">
@@ -17,10 +37,10 @@
 
             <div class="absolute bottom-6 left-4 w-1/2">
               <select id="model-select" class="w-full glassmorph cursor-pointer px-2 py-1 text-gray-300 border border-gray-400 rounded-md text-sm bg-white">
-                <option value="@cf/qwen/qwen1.5-0.5b-chat" selected>⚡ Qwen 0.5B (Gratis)</option>
-                <option value="@cf/meta/llama-3.2-1b-instruct">🐣 LLaMA 3.2-1B (Gratis 2x/hari)</option>
-                <option value="@cf/mistralai/mistral-small-3.1-24b-instruct">🧠 Mistral 24B (Rp 7.500)</option>
-                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧨 DeepSeek 32B (Rp 12.000)</option>
+                <option value="@cf/qwen/qwen2.5-coder-32b-instruct" selected>qwen2.5-coder (Gratis)</option>
+                <option value="@cf/meta/llama-4-scout-17b-16e-instruct">llama-4 (Gratis)</option>
+                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">deepseek-ai (Rp 12.500)</option>
+                <option value="@cf/moonshotai/kimi-k2.5">kimi-k2.5 (Rp 25.000)</option>
               </select>
             </div>
 
@@ -32,8 +52,5 @@
               <i class="fa-solid fa-wand-magic-sparkles"></i>
             </button>
           </div>
-
-          <div id="loading" class="hidden text-sm text-blue-400 animate-pulse text-center mt-4">
-            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Sedang memproses dengan AI...
-          </div>
+</div>
         </div>

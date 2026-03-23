@@ -2,10 +2,10 @@
 import { hasModelAccess } from "./accessControl.js";
 
 export const MODEL_PRICING = {
-  "@cf/qwen/qwen1.5-0.5b-chat": 0,
-  "@cf/meta/llama-3.2-1b-instruct": 0,
-  "@cf/mistralai/mistral-small-3.1-24b-instruct": 7500,
-  "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": 12500
+  "@cf/qwen/qwen2.5-coder-32b-instruct": 0,
+  "@cf/meta/llama-4-scout-17b-16e-instruct": 0,
+  "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": 12500,
+  "@cf/moonshotai/kimi-k2.5": 25000
 };
 
 export function setupModelPricingUI() {
@@ -20,7 +20,7 @@ export function setupModelPricingUI() {
     const selectedModel = modelSelect.value;
     const price = MODEL_PRICING[selectedModel] || 0;
 
-    const isLoginRequired = selectedModel === "@cf/meta/llama-3.2-1b-instruct";
+    const isLoginRequired = selectedModel === "@cf/meta/llama-4-scout-17b-16e-instruct";
 
     if (price === 0) {
       if (isLoginRequired && !uid) {

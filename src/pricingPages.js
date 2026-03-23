@@ -139,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupPayButtons();
   
   auth.onAuthStateChanged((user) => {
+    const loginBtn = document.getElementById("login-btn");
     const logoutBtn = document.getElementById("logout-btn");
     const userInfo = document.getElementById("user-info");
 
@@ -146,10 +147,12 @@ document.addEventListener("DOMContentLoaded", () => {
       userInfo.textContent = `Login sebagai: ${user.email}`;
       userInfo.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
+      loginBtn.classList.add("hidden");
       hidePurchasedButtons(user.uid);
     } else {
       userInfo.classList.add("hidden");
       logoutBtn.classList.add("hidden");
+      loginBtn.classList.remove("hidden");
 
       document.querySelectorAll(".pay-button.hidden").forEach(btn => {
         btn.classList.remove("hidden");
