@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     <body class="bg-gray-50 flex flex-col justify-center items-center min-h-screen text-center p-6">
       <h1 class="text-3xl font-bold text-clifford mb-2">👋 Selamat datang!</h1>
       <p class="text-gray-600 max-w-md">Tulis perintah desain atau masukkan URL website, dan aku akan bantu generate ulang tampilannya dengan Tailwind CSS ✨</p>
-      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra sedang dalam perbaikan dulu, jadi belum maksimal untuk bekerja dengan baik, harap maklum yaa.. 😉️</p>
+      <p class="text-gray-600 max-w-md">Tapi saat ini Lyra udah pindah ke kesini 👉 <a href="https://coda-code.vercel.app" class="text-blue-500 font-bold">CoDa Code</a> yuuu dicoba.. 😉️</p>
     </body>
 </html>`;
 
@@ -199,7 +199,7 @@ const payload = {
 
 console.log("🔵 Mengirim ke backend:", JSON.stringify(payload, null, 2));
 
-const res = await fetch("http://localhost:8787/", {
+const res = await fetch("https://ui-transformers.androidbutut.workers.dev/", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
