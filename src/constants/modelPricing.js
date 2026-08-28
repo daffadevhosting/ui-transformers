@@ -1,0 +1,35 @@
+// src/constants/modelPricing.js
+// Single source of truth for model pricing
+
+export const MODEL_PRICING = {
+  "@cf/qwen/qwen2.5-coder-32b-instruct": 0,
+  "@cf/meta/llama-4-scout-17b-16e-instruct": 0,
+  "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": 12500,
+  "@cf/moonshotai/kimi-k2.5": 25000,
+};
+
+/**
+ * Get the price for a specific model
+ * @param {string} model - The model identifier
+ * @returns {number} The price in IDR
+ */
+export function getModelPrice(model) {
+  return MODEL_PRICING[model] || 0;
+}
+
+/**
+ * Check if a model is unlocked for the current user
+ * @param {string} model - The model identifier
+ * @returns {boolean} True if unlocked
+ */
+export function isUnlocked(model) {
+  return localStorage.getItem(`modelAccess:${model}`) === "true";
+}
+
+/**
+ * Unlock a model for the current user
+ * @param {string} model - The model identifier
+ */
+export function unlockModel(model) {
+  localStorage.setItem(`modelAccess:${model}`, "true");
+}

@@ -1,3 +1,5 @@
+// src/streamAndRender.js
+
 export async function streamAndRenderAI(response, onChunk, onDone) {
   try {
     const { result } = await response.json();
@@ -15,7 +17,7 @@ export async function streamAndRenderAI(response, onChunk, onDone) {
       }
     }, delay);
   } catch (err) {
-    console.error("❌ Gagal parse JSON AI response:", err);
-    onChunk("❌ Terjadi kesalahan saat membaca hasil AI.");
+    console.error("\u274c Gagal parse JSON AI response:", err);
+    onChunk("\u274c Terjadi kesalahan saat membaca hasil AI.");
   }
 }

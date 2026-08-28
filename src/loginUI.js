@@ -1,76 +1,36 @@
-// authSetup.js
+// src/loginUI.js
+// Login UI setup - imports auth functions from central auth module
 
-export function getAuthInstance() {
-  if (window.firebase && window.firebase.auth) {
-    return window.firebase.auth();
-  } else {
-    console.error("Firebase Auth belum diinisialisasi atau SDK tidak dimuat.");
-    throw new Error("Firebase Auth tidak tersedia.");
-  }
-}
-
-export function getGoogleAuthProvider() {
-  if (window.firebase && window.firebase.auth && window.firebase.auth.GoogleAuthProvider) {
-    return new window.firebase.auth.GoogleAuthProvider();
-  } else {
-    console.error("GoogleAuthProvider tidak tersedia.");
-    throw new Error("GoogleAuthProvider tidak tersedia.");
-  }
-}
+import { getAuthInstance, signInWithGoogle, logout, onAuthChange, getCurrentUser } from './auth/index.js';
 
 export function setupLoginUI() {
   const loginBtn = document.getElementById("login-btn");
   const logoutBtn = document.getElementById("logout-btn");
   const userInfo = document.getElementById("user-info");
 
-  loginBtn.addEventListener("click", signInWithGoogle);
-  logoutBtn.addEventListener("click", logout);
+  if (loginBtn) loginBtn.addEventListener("click", signInWithGoogle);
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
   onAuthChange((user) => {
     if (user) {
-      loginBtn.classList.add("hidden");
-      logoutBtn.classList.remove("hidden");
-      userInfo.classList.remove("hidden");
-      userInfo.innerText = `👤 ${user.displayName || user.email}`;
+      if (loginBtn) loginBtn.classList.add("hidden");
+      if (logoutBtn) logoutBtn.classList.remove("hidden");
+      if (userInfo) {
+        userInfo.classList.remove("hidden");
+        userInfo.innerText = `\ud83d\udc64 ${user.displayName || user.email}`;
+      }
     } else {
-      loginBtn.classList.remove("hidden");
-      logoutBtn.classList.add("hidden");
-      userInfo.classList.add("hidden");
-      userInfo.innerText = "";
+      if (loginBtn) loginBtn.classList.remove("hidden");
+      if (logoutBtn) logoutBtn.classList.add("hidden");
+      if (userInfo) {
+        userInfo.classList.add("hidden");
+        userInfo.innerText = "";
+      }
     }
   });
 }
 
-export async function signInWithGoogle() {
-  try {
-    const auth = getAuthInstance();
-    const provider = getGoogleAuthProvider(); // Gunakan fungsi pembantu
-    const result = await auth.signInWithPopup(provider);
-    console.log("✅ Login berhasil:", result.user.displayName || result.user.email);
-    return result.user;
-  } catch (error) {
-    console.error("❌ Gagal login dengan Google:", error);
-    throw error; // Lempar error agar bisa ditangani di UI
-  }
-}
-
-export async function logout() {
-  try {
-    const auth = getAuthInstance();
-    await auth.signOut();
-    console.log("✅ Pengguna berhasil logout.");
-  } catch (error) {
-    console.error("❌ Gagal logout:", error);
-    throw error;
-  }
-}
-
-export function onAuthChange(callback) {
-  const auth = getAuthInstance();
-  auth.onAuthStateChanged(callback);
-}
-
-export function setupLoginModal() { // <-- Tambahkan 'export' di sini
+export function setupLoginModal() {
   const modal = document.getElementById("login-modal");
   const googleLoginBtn = document.getElementById("google-login-btn");
   const closeLoginModalBtn = document.getElementById("close-login-modal");
@@ -86,11 +46,12 @@ export function setupLoginModal() { // <-- Tambahkan 'export' di sini
   if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", async () => {
       try {
-        // Asumsi signInWithGoogle diimpor dengan benar dari authSetup.js
         await signInWithGoogle();
         closeLogin();
       } catch (err) {
-        globalAlert("❌ Gagal login: " + err.message, "error");
+        if (window.globalAlert) {
+          window.globalAlert("\u274c Gagal login: " + err.message, "error");
+        }
       }
     });
   }
@@ -99,10 +60,9 @@ export function setupLoginModal() { // <-- Tambahkan 'export' di sini
     closeLoginModalBtn.addEventListener("click", closeLogin);
   }
 
-  // Ekspor pemicu manual
+  // Export manual trigger
   window.requireLogin = () => {
     try {
-      // Asumsi getAuthInstance diimpor dengan benar dari authSetup.js
       const auth = getAuthInstance();
       if (!auth.currentUser) {
         openLogin();
@@ -115,3 +75,6 @@ export function setupLoginModal() { // <-- Tambahkan 'export' di sini
     }
   };
 }
+
+// Re-export auth functions for backward compatibility
+export { getAuthInstance as getAuth, signInWithGoogle, logout, onAuthChange, getCurrentUser };

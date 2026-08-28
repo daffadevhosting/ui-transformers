@@ -1,3 +1,4 @@
+// src/pricingPages.js
 
 const MIDTRANS_WORKER_URL = "https://midtranspay.androidbutut.workers.dev/snap";
 
@@ -11,7 +12,7 @@ async function generateSnapToken({ orderId, model, gross_amount, uid, userEmail 
     const response = await fetch(MIDTRANS_WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId, gross_amount, model, uid, userEmail }) // Data sudah lengkap
+      body: JSON.stringify({ orderId, gross_amount, model, uid, userEmail })
     });
 
     const result = await response.json();
@@ -39,10 +40,22 @@ function setupPayButtons() {
     const originalButtonText = button.textContent;
 
     button.addEventListener("click", async () => {
+      // Use getAuth from authSetup
+      const auth = window.getAuth ? window.getAuth() : (window.firebase && window.firebase.auth && window.firebase.auth());
+      
+      if (!auth) {
+        if (window.globalAlert) {
+          window.globalAlert("Firebase Auth tidak tersedia. Silakan refresh halaman.", "error");
+        }
+        return;
+      }
+
       const user = auth.currentUser;
 
       if (!user) {
-        globalAlert("Anda harus login terlebih dahulu untuk melakukan pembelian.", "warning");
+        if (window.globalAlert) {
+          window.globalAlert("Anda harus login terlebih dahulu untuk melakukan pembelian.", "warning");
+        }
         return;
       }
 
@@ -69,27 +82,35 @@ function setupPayButtons() {
         window.snap.pay(snapToken, {
           onSuccess: (result) => {
             // Gunakan orderId dari result yang dikembalikan Midtrans untuk konsistensi
-            location.href = `/success.html?order_id=${result.order_id}`;
+            window.location.href = `/success.html?order_id=${result.order_id}`;
           },
           onPending: (result) => {
-            globalAlert("Pembayaran Anda sedang dalam proses.", "warning");
+            if (window.globalAlert) {
+              window.globalAlert("Pembayaran Anda sedang dalam proses.", "warning");
+            }
             button.disabled = false;
             button.textContent = originalButtonText;
           },
           onError: (error) => {
-            globalAlert(`Pembayaran gagal: ${error?.message || 'Terjadi kesalahan.'}`);
+            if (window.globalAlert) {
+              window.globalAlert(`Pembayaran gagal: ${error?.message || 'Terjadi kesalahan.'}`);
+            }
             button.disabled = false;
             button.textContent = originalButtonText;
           },
           onClose: () => {
-            globalAlert("Pembayaran dibatalkan.", "error");
+            if (window.globalAlert) {
+              window.globalAlert("Pembayaran dibatalkan.", "error");
+            }
             button.disabled = false;
             button.textContent = originalButtonText;
           }
         });
 
       } catch (err) {
-        globalAlert(`Terjadi kesalahan: ${err.message}`);
+        if (window.globalAlert) {
+          window.globalAlert(`Terjadi kesalahan: ${err.message}`);
+        }
         button.disabled = false;
         button.textContent = originalButtonText;
       }
@@ -104,8 +125,15 @@ function setupPayButtons() {
  */
 async function hidePurchasedButtons(uid) {
   try {
-    const db = window.getFirestore(); // pakai global dari firebase init
-    const userDocRef = db.collection("users").doc(uid); // ✅ pakai compat-style
+    // Use global firebase instance
+    const db = window.getFirestore ? window.getFirestore() : (window.firebase && window.firebase.firestore && window.firebase.firestore());
+    
+    if (!db) {
+      console.error("Firestore tidak tersedia");
+      return;
+    }
+
+    const userDocRef = db.collection("users").doc(uid);
     const userDocSnap = await userDocRef.get();
 
     if (userDocSnap.exists) {
@@ -123,7 +151,7 @@ async function hidePurchasedButtons(uid) {
               infoSpan.className = "text-green-400 font-semibold text-base mt-2 purchase-status";
               btn.parentElement.appendChild(infoSpan);
             }
-            infoSpan.textContent = "✅ Sudah Dibeli";
+            infoSpan.textContent = "\u2705 Sudah Dibeli";
           }
         });
       }
@@ -135,7 +163,14 @@ async function hidePurchasedButtons(uid) {
 
 // --- INISIALISASI & AUTH STATE (Tidak banyak berubah) ---
 document.addEventListener("DOMContentLoaded", () => {
-  const auth = window.getAuth(); // Pastikan ambil dari global
+  // Use getAuth from authSetup
+  const auth = window.getAuth ? window.getAuth() : (window.firebase && window.firebase.auth && window.firebase.auth());
+  
+  if (!auth) {
+    console.error("Firebase Auth tidak tersedia");
+    return;
+  }
+  
   setupPayButtons();
   
   auth.onAuthStateChanged((user) => {
@@ -144,15 +179,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const userInfo = document.getElementById("user-info");
 
     if (user) {
-      userInfo.textContent = `Login sebagai: ${user.email}`;
-      userInfo.classList.remove("hidden");
-      logoutBtn.classList.remove("hidden");
-      loginBtn.classList.add("hidden");
+      if (userInfo) userInfo.textContent = `Login sebagai: ${user.email}`;
+      if (userInfo) userInfo.classList.remove("hidden");
+      if (logoutBtn) logoutBtn.classList.remove("hidden");
+      if (loginBtn) loginBtn.classList.add("hidden");
       hidePurchasedButtons(user.uid);
     } else {
-      userInfo.classList.add("hidden");
-      logoutBtn.classList.add("hidden");
-      loginBtn.classList.remove("hidden");
+      if (userInfo) userInfo.classList.add("hidden");
+      if (logoutBtn) logoutBtn.classList.add("hidden");
+      if (loginBtn) loginBtn.classList.remove("hidden");
 
       document.querySelectorAll(".pay-button.hidden").forEach(btn => {
         btn.classList.remove("hidden");
@@ -166,8 +201,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
-        await auth.signOut();
-        location.reload();
+        if (auth) {
+          await auth.signOut();
+          window.location.reload();
+        }
       } catch (error) {
         console.error("Error during logout:", error);
       }

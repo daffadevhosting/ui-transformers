@@ -1,8 +1,6 @@
 // snapClient.js
-import { getAuthInstance } from "./authSetup.js";
-
-import { MODEL_PRICING, unlockModel } from './premiumAccess.js';
-
+import { getAuthInstance } from "./auth/index.js";
+import { MODEL_PRICING, unlockModel } from './constants/modelPricing.js';
 
 export function setupSnapCheckout() {
   const payButton = document.getElementById("pay-now");
@@ -15,7 +13,7 @@ export function setupSnapCheckout() {
 
   payButton.addEventListener("click", async () => {
     const auth = getAuthInstance(); 
-    const user = auth.currentUser; // currentUser adalah properti dari objek auth compat
+    const user = auth.currentUser;
 
     if (!user) {
       document.getElementById("login-modal")?.classList.remove("hidden");
@@ -30,12 +28,16 @@ export function setupSnapCheckout() {
 
     // Validasi dasar di frontend sebelum mengirim ke worker
     if (!userEmail) {
-        globalAlert("⚠️ Email pengguna tidak ditemukan. Harap login kembali.", "error");
+        if (window.globalAlert) {
+          window.globalAlert("\u26a0\ufe0f Email pengguna tidak ditemukan. Harap login kembali.", "error");
+        }
         console.error("User email is missing for checkout process.");
         return;
     }
     if (!model || amount <= 0) {
-        globalAlert("⚠️ Model atau jumlah pembayaran tidak valid.", "error");
+        if (window.globalAlert) {
+          window.globalAlert("\u26a0\ufe0f Model atau jumlah pembayaran tidak valid.", "error");
+        }
         console.error("Invalid model or amount selected for checkout.");
         return;
     }
@@ -44,51 +46,63 @@ export function setupSnapCheckout() {
       const res = await fetch("https://midtranspay.androidbutut.workers.dev/snap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Pastikan semua variabel ini terdefinisi dengan baik
         body: JSON.stringify({ orderId, gross_amount: amount, model, uid, userEmail }) 
       });
 
       const data = await res.json();
 
-      if (!res.ok) { // Cek status res.ok untuk error dari worker (misal status 400/500)
+      if (!res.ok) {
         console.error("Error from Midtrans Worker:", data.error || data);
-        globalAlert(`❌ Gagal memproses permintaan: ${data.error || "Pesan error tidak diketahui."}`);
+        if (window.globalAlert) {
+          window.globalAlert(`\u274c Gagal memproses permintaan: ${data.error || "Pesan error tidak diketahui."}`);
+        }
         return;
       }
 
       if (!data.token) {
-        globalAlert("❌ Gagal mendapatkan Snap token dari Midtrans.", "error");
+        if (window.globalAlert) {
+          window.globalAlert("\u274c Gagal mendapatkan Snap token dari Midtrans.", "error");
+        }
         return;
       }
 
       if (typeof window.snap === 'undefined') {
-        globalAlert("⚠️ Midtrans Snap.js belum dimuat. Silakan cek koneksi internet atau konfigurasi.", "error");
+        if (window.globalAlert) {
+          window.globalAlert("\u26a0\ufe0f Midtrans Snap.js belum dimuat. Silakan cek koneksi internet atau konfigurasi.", "error");
+        }
         console.error("Midtrans Snap.js is not loaded.");
         return;
       }
 
       window.snap.pay(data.token, {
         onSuccess: function (result) {
-          // Asumsi unlockModel tidak bergantung pada Firebase modular
           unlockModel(model); 
-          globalAlert("✅ Pembayaran berhasil!", "success");
+          if (window.globalAlert) {
+            window.globalAlert("\u2705 Pembayaran berhasil!", "success");
+          }
           // Redirect ke halaman sukses dengan order_id
           window.location.href = "/success?order_id=" + result.order_id;
         },
         onPending: function () {
-          globalAlert("⏳ Pembayaran menunggu konfirmasi.", "warning");
+          if (window.globalAlert) {
+            window.globalAlert("\u23f3 Pembayaran menunggu konfirmasi.", "warning");
+          }
         },
         onError: function (result) {
-          console.error("❌ Pembayaran gagal (Midtrans):", result);
-          globalAlert("❌ Pembayaran gagal. " + (result.status_message || "Silakan coba lagi."), "error");
+          console.error("\u274c Pembayaran gagal (Midtrans):", result);
+          if (window.globalAlert) {
+            window.globalAlert("\u274c Pembayaran gagal. " + (result.status_message || "Silakan coba lagi."), "error");
+          }
         },
         onClose: function () {
-          console.log("🛑 Pembayaran dibatalkan oleh user.");
+          console.log("\ud83d\uded1 Pembayaran dibatalkan oleh user.");
         }
       });
     } catch (err) {
-      console.error("❌ Error saat proses pembayaran:", err);
-      globalAlert("⚠️ Terjadi kesalahan. Silakan coba lagi.", "error");
+      console.error("\u274c Error saat proses pembayaran:", err);
+      if (window.globalAlert) {
+        window.globalAlert("\u26a0\ufe0f Terjadi kesalahan. Silakan coba lagi.", "error");
+      }
     }
   });
 }
